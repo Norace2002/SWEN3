@@ -1,0 +1,268 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: if22b010@technikum-wien.at
+  description: Lorem ipsum dolor sit amet
+  title: Document Manager System Server
+  version: 1.0.11
+servers:
+- url: http://localhost:8081
+paths:
+  /documents:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Document'
+                type: array
+          description: OK
+        "404":
+          description: NOT FOUND
+        "500":
+          description: INTERNAL SERVER ERROR
+      summary: Get a list of all documents
+      x-accepts:
+      - application/json
+    post:
+      requestBody:
+        content:
+          application/pdf:
+            schema:
+              format: binary
+              type: string
+        description: The document to upload
+        required: true
+      responses:
+        "201":
+          description: CREATED
+        "400":
+          description: BAD REQUEST
+        "500":
+          description: INTERNAL SERVER ERROR
+      summary: Upload a new document
+      x-content-type: application/pdf
+      x-accepts:
+      - application/json
+  /documents/{id}:
+    delete:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: NOT FOUND
+        "500":
+          description: INTERNAL SERVER ERROR
+      summary: Delete a document by ID
+      x-accepts:
+      - application/json
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: OK
+        "404":
+          description: NOT FOUND
+        "500":
+          description: INTERNAL SERVER ERROR
+      summary: Get a document by ID
+      x-accepts:
+      - application/json
+    put:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+        description: The updated document data
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: BAD REQUEST
+        "404":
+          description: NOT FOUND
+        "500":
+          description: INTERNAL SERVER ERROR
+      summary: Update a document by ID
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /documents/{id}/download:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/pdf:
+              schema:
+                format: binary
+                type: string
+          description: OK
+        "404":
+          description: NOT FOUND
+        "500":
+          description: INTERNAL SERVER ERROR
+      summary: Download a document by ID
+      x-accepts:
+      - application/pdf
+  /documents/{id}/preview:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_documents__id__preview_get_200_response'
+          description: OK
+        "404":
+          description: NOT FOUND
+        "500":
+          description: INTERNAL SERVER ERROR
+      summary: Preview a document by ID
+      x-accepts:
+      - application/json
+  /documents/{id}/metadata:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metadata'
+          description: OK
+        "404":
+          description: NOT FOUND
+        "500":
+          description: INTERNAL SERVER ERROR
+      summary: Get metadata of a document by ID
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    Document:
+      example:
+        uploadDate: 2000-01-23T04:56:07.000+00:00
+        size: 0
+        description: description
+        fileUrl: fileUrl
+        id: id
+        title: title
+        fileType: fileType
+      properties:
+        id:
+          description: Unique identifier for the document
+          type: string
+        title:
+          description: Title of the document
+          type: string
+        description:
+          description: Description of the document
+          type: string
+        uploadDate:
+          description: Date when the document was uploaded
+          format: date-time
+          type: string
+        fileUrl:
+          description: URL to access the document
+          type: string
+        fileType:
+          description: "The file type of the document (e.g., PDF)"
+          type: string
+        size:
+          description: Size of the document in bytes
+          type: integer
+      type: object
+    Metadata:
+      example:
+        uploadDate: 2000-01-23T04:56:07.000+00:00
+        author: author
+        id: id
+        title: title
+        version: version
+        tags:
+        - tags
+        - tags
+      properties:
+        id:
+          description: Unique identifier for the document
+          type: string
+        title:
+          description: Title of the document
+          type: string
+        author:
+          description: Author of the document
+          type: string
+        uploadDate:
+          description: Date when the document was uploaded
+          format: date-time
+          type: string
+        tags:
+          description: Tags associated with the document
+          items:
+            type: string
+          type: array
+        version:
+          description: Version of the document
+          type: string
+      type: object
+    _documents__id__preview_get_200_response:
+      example:
+        previewUrl: previewUrl
+      properties:
+        previewUrl:
+          type: string
+      type: object

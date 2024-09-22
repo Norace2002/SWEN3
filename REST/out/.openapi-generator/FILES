@@ -1,0 +1,16 @@
+.openapi-generator-ignore
+README.md
+pom.xml
+src/main/java/paperless/config/HomeController.java
+src/main/java/paperless/config/SpringDocConfiguration.java
+src/main/java/paperless/controller/ApiUtil.java
+src/main/java/paperless/controller/DocumentsApi.java
+src/main/java/paperless/controller/DocumentsApiController.java
+src/main/java/paperless/services/OpenApiGeneratorApplication.java
+src/main/java/paperless/services/RFC3339DateFormat.java
+src/main/java/paperless/services/dto/Document.java
+src/main/java/paperless/services/dto/DocumentsIdPreviewGet200Response.java
+src/main/java/paperless/services/dto/Metadata.java
+src/main/resources/application.properties
+src/main/resources/openapi.yaml
+src/test/java/paperless/services/OpenApiGeneratorApplicationTests.java
