@@ -40,7 +40,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.1.3</version>
                 <configuration>
+                    <mainClass>paperless.OpenApiGeneratorApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
