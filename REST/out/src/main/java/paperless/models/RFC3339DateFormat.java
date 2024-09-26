@@ -1,4 +1,4 @@
-package paperless.services;
+package paperless.models;
 
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 

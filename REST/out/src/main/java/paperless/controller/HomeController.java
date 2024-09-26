@@ -1,4 +1,4 @@
-package paperless.config;
+package paperless.controller;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
