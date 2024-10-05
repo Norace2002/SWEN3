@@ -15,4 +15,7 @@ services:
       context: ./webserver
       dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "8080:80"
+    volumes:
+      - ./webserver/src:/app/src
+      - ./webserver/public:/app/public

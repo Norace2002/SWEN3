@@ -1,19 +1,14 @@
-import logo from './logo.svg';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React from 'react';
 import './App.css';
-import {BrowserRouter, Routes, Route} from "react-router-dom";
+import logo from './logo.svg';
 
-/*
-import './paperless/landing.js';
-import './paperless/upload.js';
-import './paperless/preview.js';
-*/
-
-function App() {
+function AppRouter() {
   return (
       <BrowserRouter>
         <Routes>
-          <!-- default path leads (for now) to standard react page -->
-          <Route exact path="/">
+          {/* Home route */}
+          <Route path="/" element={
             <div className="App">
               <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
@@ -30,25 +25,19 @@ function App() {
                 </a>
               </header>
             </div>
-          </Route>
+          } />
 
-          <!-- documents landing page -->
-          <Route exact path="/documents">
-            /documents reached
-          </Route>
+          {/* Documents route */}
+          <Route path="/documents" element={<div>/documents reached</div>} />
 
-          <!-- documents upload page -->
-          <Route exact path="/documents/upload">
-            /documents/upload reached
-          </Route>
+          {/* Documents upload route */}
+          <Route path="/documents/upload" element={<div>/documents/upload reached</div>} />
 
-          <!-- document preview/info page -->
-          <Route exact path="/documents/{id}">
-            /documents/id reached
-          </Route>
+          {/* Dynamic document route (use `:id` for dynamic segments in URL) */}
+          <Route path="/documents/:id" element={<div>/documents/id reached</div>} />
         </Routes>
       </BrowserRouter>
   );
 }
 
-export default App;
+export default AppRouter;
