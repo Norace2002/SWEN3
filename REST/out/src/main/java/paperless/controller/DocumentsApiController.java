@@ -19,6 +19,7 @@ import java.util.Optional;
 import jakarta.annotation.Generated;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-09-22T12:43:13.854462136Z[Etc/UTC]", comments = "Generator version: 7.9.0-SNAPSHOT")
+@CrossOrigin(origins = "http://localhost:8080")
 @Controller
 @RequestMapping("${openapi.documentManagerSystemServer.base-path:}")
 public class DocumentsApiController implements DocumentsApi {

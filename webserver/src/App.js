@@ -1,43 +1,45 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import React from 'react';
-import './App.css';
-import logo from './logo.svg';
 
-function AppRouter() {
+import LandingPage from './paperless/landing';
+import UploadPage from './paperless/upload';
+import PreviewPage from './paperless/preview';
+import ProfilePage from './paperless/profile';
+import Sidebar from './paperless/sidebar';
+
+function App() {
   return (
       <BrowserRouter>
-        <Routes>
-          {/* Home route */}
-          <Route path="/" element={
-            <div className="App">
-              <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                  Edit <code>src/App.js</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                  Learn React
-                </a>
-              </header>
-            </div>
-          } />
+        <div style={styles.mainDiv}>
+          {/* Sidebar Component */}
+          <Sidebar />
 
-          {/* Documents route */}
-          <Route path="/documents" element={<div>/documents reached</div>} />
+          {/* Main content area which will update based on routes */}
+          <div style={{ flex: 1, padding: '20px' }}>
+            <Routes>
+              {/* Default route to landing page */}
+              <Route path="/" element={LandingPage} />
 
-          {/* Documents upload route */}
-          <Route path="/documents/upload" element={<div>/documents/upload reached</div>} />
+              {/* Sidebar-routed pages */}
+              <Route path="/profile" element={ProfilePage} />
+              <Route path="/documents" element={LandingPage} />
+              <Route path="/upload" element={UploadPage} />
 
-          {/* Dynamic document route (use `:id` for dynamic segments in URL) */}
-          <Route path="/documents/:id" element={<div>/documents/id reached</div>} />
-        </Routes>
+              {/* Catch-all route to handle unknown paths */}
+              <Route path="*" element={<Navigate to={LandingPage} />} />
+            </Routes>
+          </div>
+        </div>
       </BrowserRouter>
   );
 }
 
-export default AppRouter;
+const styles={
+    mainDiv:{
+        display: 'flex',
+        height: '100%',
+        width: '100%'
+    }
+}
+
+export default App;
