@@ -1,25 +1,36 @@
-# Step 1: Build React app with Node.js
-FROM node:16-alpine as build
+# Build stage
+FROM node:16-alpine AS build
 
-# Set working directory
+# Set working directory inside the container
 WORKDIR /app
 
-# Install dependencies
-COPY package.json yarn.lock ./
-RUN yarn install
+# Copy package.json and yarn.lock to install dependencies
+COPY ./package.json ./yarn.lock ./
 
-# Copy project files and build the app
-COPY . .
+# install missing babel - dependiency
+RUN yarn add @babel/plugin-proposal-private-property-in-object --dev
+
+# Install all dependencies
+RUN yarn install --frozen-lockfile
+
+# Copy the entire source code (including public and src folders)
+COPY ./src ./src
+COPY ./public ./public
+
+# Build the React application
 RUN yarn build
 
-# Step 2: Serve the React app with Nginx
+# Production stage
 FROM nginx:alpine
 
-# Copy the build output to Nginx's default directory
+# Copy built files from the build stage to Nginx's HTML directory
 COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy custom Nginx configuration to override default config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80 for Nginx
 EXPOSE 80
 
-# Start Nginx
+# Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]

@@ -78,7 +78,6 @@ public interface DocumentsApi {
 
     }
 
-
     /**
      * DELETE /documents/{id} : Delete a document by ID
      *
@@ -87,6 +86,7 @@ public interface DocumentsApi {
      *         or NOT FOUND (status code 404)
      *         or INTERNAL SERVER ERROR (status code 500)
      */
+
     @Operation(
         operationId = "documentsIdDelete",
         summary = "Delete a document by ID",
@@ -100,14 +100,13 @@ public interface DocumentsApi {
         method = RequestMethod.DELETE,
         value = "/documents/{id}"
     )
-    
+
     default ResponseEntity<Void> documentsIdDelete(
         @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
-
 
     /**
      * GET /documents/{id}/download : Download a document by ID
