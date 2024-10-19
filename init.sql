@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS documents (
+    id VARCHAR(255) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    fileUrl VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS metadata (
+    id VARCHAR(255) PRIMARY KEY,
+    author VARCHAR(255) NOT NULL,
+    uploadDate VARCHAR(255) NOT NULL,
+    fileType VARCHAR(255) NOT NULL,
+    fileSize INTEGER NOT NULL,
+    documentTags VARCHAR(255)[] NOT NULL,
+    version INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS tags (
+    tag VARCHAR(255) PRIMARY KEY
+);
