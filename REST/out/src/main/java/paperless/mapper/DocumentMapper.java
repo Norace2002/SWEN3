@@ -1,8 +1,9 @@
-package paperless.models;
+package paperless.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import paperless.models.Document;
 
 @Mapper
 public interface DocumentMapper {

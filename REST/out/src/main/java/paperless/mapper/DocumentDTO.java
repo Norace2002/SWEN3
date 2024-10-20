@@ -1,4 +1,4 @@
-package paperless.models;
+package paperless.mapper;
 
 
 public class DocumentDTO {

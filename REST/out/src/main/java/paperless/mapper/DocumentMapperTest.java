@@ -1,7 +1,8 @@
-package paperless.models;
+package paperless.mapper;
 
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import paperless.models.Document;
 
 import static org.junit.jupiter.api.Assertions.*;
 
