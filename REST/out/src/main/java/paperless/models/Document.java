@@ -4,6 +4,9 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.OffsetDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,9 +18,11 @@ import jakarta.annotation.Generated;
  * Document
  */
 
+@Entity
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-09-22T12:43:13.854462136Z[Etc/UTC]", comments = "Generator version: 7.9.0-SNAPSHOT")
 public class Document {
 
+  @Id
   private String id;
 
   private String title;

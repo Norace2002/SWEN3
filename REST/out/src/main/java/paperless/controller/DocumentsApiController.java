@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.annotation.Generated;
+import paperless.services.DocumentService;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-09-22T12:43:13.854462136Z[Etc/UTC]", comments = "Generator version: 7.9.0-SNAPSHOT")
 @CrossOrigin(origins = "http://localhost:8080")
@@ -31,6 +32,9 @@ public class DocumentsApiController implements DocumentsApi {
         this.request = request;
     }
 
+    @Autowired
+    private DocumentService documentService;
+
     @Override
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
@@ -41,8 +45,8 @@ public class DocumentsApiController implements DocumentsApi {
     @Override
     @GetMapping("/documents")
     public ResponseEntity<List<Document>> documentsGet(){
-        List<Document> returnList = new ArrayList<>();
-        return new ResponseEntity<>(returnList, HttpStatus.OK);
+        List<Document> documents = documentService.getAllDocuments();
+        return ResponseEntity.ok(documents);
     }
 
     @Override
