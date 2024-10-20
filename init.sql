@@ -5,16 +5,16 @@ CREATE TABLE IF NOT EXISTS documents (
     fileUrl VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS tags (
+    tag VARCHAR(255) PRIMARY KEY
+);
+
 CREATE TABLE IF NOT EXISTS metadata (
     id VARCHAR(255) PRIMARY KEY REFERENCES documents(id) ON DELETE CASCADE,
     author VARCHAR(255) NOT NULL,
     uploadDate VARCHAR(255) NOT NULL,
     fileType VARCHAR(255) NOT NULL,
     fileSize INTEGER NOT NULL,
-    documentTags VARCHAR(255)[] NOT NULL REFERENCES tags(tag),
+    documentTags VARCHAR(255)[],
     version INTEGER NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS tags (
-    tag VARCHAR(255) PRIMARY KEY
 );
