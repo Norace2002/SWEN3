@@ -5,8 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.OffsetDateTime;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,26 +27,21 @@ import jakarta.annotation.Generated;
 /**
  * Document
  */
-
 @Entity
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-09-22T12:43:13.854462136Z[Etc/UTC]", comments = "Generator version: 7.9.0-SNAPSHOT")
 public class Document {
-
-  @Id
-  private String id;
-
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "native")
+  @Column @NotNull
+  private String id; //Maybe int or long - not decided yet
+  
+  @Column @NotNull
   private String title;
 
+  @Column @Size(max = 500)
   private String description;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private OffsetDateTime uploadDate;
-
+  @Column @NotNull
   private String fileUrl;
-
-  private String fileType;
-
-  private Integer size;
 
   public Document id(String id) {
     this.id = id;
@@ -98,26 +103,6 @@ public class Document {
     this.description = description;
   }
 
-  public Document uploadDate(OffsetDateTime uploadDate) {
-    this.uploadDate = uploadDate;
-    return this;
-  }
-
-  /**
-   * Date when the document was uploaded
-   * @return uploadDate
-   */
-  @Valid 
-  @Schema(name = "uploadDate", description = "Date when the document was uploaded", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("uploadDate")
-  public OffsetDateTime getUploadDate() {
-    return uploadDate;
-  }
-
-  public void setUploadDate(OffsetDateTime uploadDate) {
-    this.uploadDate = uploadDate;
-  }
-
   public Document fileUrl(String fileUrl) {
     this.fileUrl = fileUrl;
     return this;
@@ -138,45 +123,6 @@ public class Document {
     this.fileUrl = fileUrl;
   }
 
-  public Document fileType(String fileType) {
-    this.fileType = fileType;
-    return this;
-  }
-
-  /**
-   * The file type of the document (e.g., PDF)
-   * @return fileType
-   */
-  
-  @Schema(name = "fileType", description = "The file type of the document (e.g., PDF)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("fileType")
-  public String getFileType() {
-    return fileType;
-  }
-
-  public void setFileType(String fileType) {
-    this.fileType = fileType;
-  }
-
-  public Document size(Integer size) {
-    this.size = size;
-    return this;
-  }
-
-  /**
-   * Size of the document in bytes
-   * @return size
-   */
-  
-  @Schema(name = "size", description = "Size of the document in bytes", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("size")
-  public Integer getSize() {
-    return size;
-  }
-
-  public void setSize(Integer size) {
-    this.size = size;
-  }
 
   @Override
   public boolean equals(Object o) {
@@ -190,15 +136,12 @@ public class Document {
     return Objects.equals(this.id, document.id) &&
         Objects.equals(this.title, document.title) &&
         Objects.equals(this.description, document.description) &&
-        Objects.equals(this.uploadDate, document.uploadDate) &&
-        Objects.equals(this.fileUrl, document.fileUrl) &&
-        Objects.equals(this.fileType, document.fileType) &&
-        Objects.equals(this.size, document.size);
+        Objects.equals(this.fileUrl, document.fileUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title, description, uploadDate, fileUrl, fileType, size);
+    return Objects.hash(id, title, description, fileUrl);
   }
 
   @Override
@@ -208,10 +151,7 @@ public class Document {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
-    sb.append("    uploadDate: ").append(toIndentedString(uploadDate)).append("\n");
     sb.append("    fileUrl: ").append(toIndentedString(fileUrl)).append("\n");
-    sb.append("    fileType: ").append(toIndentedString(fileType)).append("\n");
-    sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("}");
     return sb.toString();
   }
