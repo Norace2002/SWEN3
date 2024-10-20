@@ -21,7 +21,6 @@ import jakarta.annotation.Generated;
  */
 
 @Entity
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-09-22T12:43:13.854462136Z[Etc/UTC]", comments = "Generator version: 7.9.0-SNAPSHOT")
 public class Metadata {
 
   @Id

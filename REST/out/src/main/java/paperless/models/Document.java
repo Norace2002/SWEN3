@@ -24,14 +24,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import jakarta.annotation.Generated;
 
-/**
- * Document
- */
 @Entity
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-09-22T12:43:13.854462136Z[Etc/UTC]", comments = "Generator version: 7.9.0-SNAPSHOT")
 public class Document {
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "native")
-  @Column @NotNull
+  @Id
   private String id; //Maybe int or long - not decided yet
   
   @Column @NotNull
