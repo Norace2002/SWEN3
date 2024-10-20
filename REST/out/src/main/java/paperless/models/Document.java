@@ -16,6 +16,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,15 +27,13 @@ import jakarta.annotation.Generated;
 /**
  * Document
  */
-
-@Getter @Setter
 @Entity
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-09-22T12:43:13.854462136Z[Etc/UTC]", comments = "Generator version: 7.9.0-SNAPSHOT")
 public class Document {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "native")
   @Column @NotNull
   private String id; //Maybe int or long - not decided yet
-
+  
   @Column @NotNull
   private String title;
 
