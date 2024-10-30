@@ -2,7 +2,6 @@ package paperless.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -45,36 +44,30 @@ public class DocumentsApiController implements DocumentsApi {
     @Override
     @GetMapping("/documents")
     public ResponseEntity<List<Document>> documentsGet(){
-        List<Document> documents = documentService.getAllDocuments();
-        return ResponseEntity.ok(documents);
+        return documentService.getAllDocumentsResponse();
     }
 
     @Override
     @GetMapping("/documents/{id}")
     public ResponseEntity<Document> documentsIdGet(@PathVariable String id){
-        Document returnDoc = new Document();
-        returnDoc.setId(id);
-        return new ResponseEntity<>(returnDoc, HttpStatus.OK);
+        return documentService.getDocumentByIdResponse(id);
     }
 
     @Override
     @GetMapping("/documents/{id}/download")
     public ResponseEntity<Resource> documentsIdDownloadGet(@PathVariable String id){
-        return new ResponseEntity<>(HttpStatus.OK);
+        return documentService.downloadDocumentResponse(id);
     }
 
     @GetMapping("/documents/{id}/preview")
     public ResponseEntity<DocumentsIdPreviewGet200Response> documentsIdPreviewGet(@PathVariable String id){
-        DocumentsIdPreviewGet200Response response = new DocumentsIdPreviewGet200Response();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return documentService.getDocumentPreviewResponse(id);
     }
 
     @Override
     @GetMapping("/documents/{id}/metadata")
     public ResponseEntity<Metadata> documentsIdMetadataGet(@PathVariable String id){
-        Metadata returnData = new Metadata();
-        returnData.setId(id);
-        return new ResponseEntity<>(returnData, HttpStatus.OK);
+        return documentService.getDocumentMetadataResponse(id);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +75,7 @@ public class DocumentsApiController implements DocumentsApi {
     @Override
     @PostMapping("/documents")
     public ResponseEntity<Void> documentsPost(@RequestBody Resource body){
-        return new ResponseEntity<>(HttpStatus.OK);
+        return documentService.createNewDocumentResponse(body);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +83,7 @@ public class DocumentsApiController implements DocumentsApi {
     @Override
     @PutMapping("/documents/{id}")
     public ResponseEntity<Void> documentsIdPut(@PathVariable String id, @RequestBody Document document) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return documentService.editExistingDocumentResponse(id, document);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +91,7 @@ public class DocumentsApiController implements DocumentsApi {
     @Override
     @DeleteMapping("/documents/{id}")
     public ResponseEntity<Void> documentsIdDelete(@PathVariable String id){
-        return new ResponseEntity<>(HttpStatus.OK);
+        return documentService.deleteExistingDocumentResponse(id);
     }
 
 }

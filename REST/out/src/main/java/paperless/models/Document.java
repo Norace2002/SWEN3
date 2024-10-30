@@ -27,6 +27,7 @@ import jakarta.annotation.Generated;
 @Entity
 public class Document {
   @Id
+  @Column
   private String id; //Maybe int or long - not decided yet
   
   @Column @NotNull
@@ -37,11 +38,6 @@ public class Document {
 
   @Column @NotNull
   private String fileUrl;
-
-  public Document id(String id) {
-    this.id = id;
-    return this;
-  }
 
   /**
    * Unique identifier for the document
