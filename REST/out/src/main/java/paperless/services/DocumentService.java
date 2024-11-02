@@ -5,8 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import lombok.Getter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.io.Resource;
@@ -21,6 +19,7 @@ import paperless.models.Document;
 import paperless.models.DocumentsIdPreviewGet200Response;
 import paperless.models.Metadata;
 
+import paperless.rabbitmq.RabbitMqSender;
 import paperless.repositories.DocumentRepository;
 import paperless.repositories.MetadataRepository;
 
@@ -38,6 +37,9 @@ public class DocumentService {
 
     @Autowired
     private ResourceLoader resourceLoader;
+
+    @Autowired
+    private RabbitMqSender rabbitMqSender;
 
     // @Getter
     // for whatever reason the getter from lombok here fails (02.11.24) -> manually created below
@@ -162,9 +164,10 @@ public class DocumentService {
         Document documentModel = stringToDocument(documentString);
         Metadata metadataModel = stringToMetadata(metadataString);
 
-        //file handling???
-
         try{
+            // rabbitmq message
+            this.rabbitMqSender.send();
+
             // save document data before metadata -> fk constraint
             documentRepository.save(documentModel);
             metadataRepository.save(metadataModel);
