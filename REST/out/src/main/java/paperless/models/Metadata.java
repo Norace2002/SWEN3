@@ -32,14 +32,13 @@ public class Metadata {
   private String author;
 
   @Column
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private OffsetDateTime uploaddate;
+  private String uploaddate;
 
   @Column
   private String filetype;
 
   @Column
-  private String filesize;
+  private int filesize;
 
   @Valid
   @Column
@@ -86,11 +85,11 @@ public class Metadata {
   @Valid 
   @Schema(name = "uploadDate", description = "Date when the document was uploaded", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("uploadDate")
-  public OffsetDateTime getUploadDate() {
+  public String getUploadDate() {
     return uploaddate;
   }
 
-  public void setUploadDate(OffsetDateTime uploadDate) {
+  public void setUploadDate(String uploadDate) {
     this.uploaddate = uploadDate;
   }
 
@@ -130,6 +129,28 @@ public class Metadata {
 
   public void setVersion(String version) {
     this.version = version;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  @Schema(name = "filetype", description = "Type of file (pdf, txt etc.)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("filetype")
+  public String getFiletype() {
+    return filetype;
+  }
+
+  public void setFiletype(String filetype) {
+    this.filetype = filetype;
+  }
+
+  @Schema(name = "filesize", description = "Size of file in bytes", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("filesize")
+  public int getFilesize() {
+    return filesize;
+  }
+
+  public void setFilesize(int filesize) {
+    this.filesize = filesize;
   }
 
   @Override

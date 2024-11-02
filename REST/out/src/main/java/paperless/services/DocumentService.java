@@ -1,19 +1,29 @@
 package paperless.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import lombok.Getter;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import paperless.models.Document;
 import paperless.models.DocumentsIdPreviewGet200Response;
 import paperless.models.Metadata;
+
 import paperless.repositories.DocumentRepository;
 import paperless.repositories.MetadataRepository;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,9 +39,59 @@ public class DocumentService {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    public DocumentService(){
+    // @Getter
+    // for whatever reason the getter from lombok here fails (02.11.24) -> manually created below
+    private ObjectMapper objectMapper;
 
+    public DocumentService(){
+        this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private ObjectMapper getObjectMapper(){
+        return this.objectMapper;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public Document stringToDocument(String input){
+        try{
+            return this.getObjectMapper().readValue(input, new TypeReference<Document>(){});
+        }
+        catch(JsonProcessingException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Metadata stringToMetadata(String input){
+        try{
+            return this.getObjectMapper().readValue(input, new TypeReference<Metadata>(){});
+        }
+        catch(JsonProcessingException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String documentToString(Document model){
+        try{
+            return this.getObjectMapper().writeValueAsString(model);
+        }
+        catch(JsonProcessingException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String metadataToString(Metadata model){
+        try{
+            return this.getObjectMapper().writeValueAsString(model);
+        }
+        catch(JsonProcessingException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public ResponseEntity<List<Document>> getAllDocumentsResponse(){
         return new ResponseEntity<>(documentRepository.findAll(), HttpStatus.OK);
@@ -98,9 +158,16 @@ public class DocumentService {
 
     //ToDo:
     // * find out how a file is sent from frontend and how it will be stored
-    public ResponseEntity<Void> createNewDocumentResponse(Document document){
+    public ResponseEntity<Void> createNewDocumentResponse(String documentString, String metadataString, MultipartFile pdfFile){
+        Document documentModel = stringToDocument(documentString);
+        Metadata metadataModel = stringToMetadata(metadataString);
+
+        //file handling???
+
         try{
-            documentRepository.save(document);
+            // save document data before metadata -> fk constraint
+            documentRepository.save(documentModel);
+            metadataRepository.save(metadataModel);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch(RuntimeException e){
             System.out.println(e);

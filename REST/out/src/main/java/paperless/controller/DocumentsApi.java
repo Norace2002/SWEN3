@@ -5,6 +5,7 @@
  */
 package paperless.controller;
 
+import org.springframework.web.multipart.MultipartFile;
 import paperless.models.Document;
 import paperless.models.DocumentsIdPreviewGet200Response;
 import paperless.models.Metadata;
@@ -25,6 +26,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import jakarta.validation.Valid;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import jakarta.annotation.Generated;
@@ -266,7 +268,6 @@ public interface DocumentsApi {
 
     }
 
-
     /**
      * PUT /documents/{id} : Update a document by ID
      *
@@ -305,7 +306,10 @@ public interface DocumentsApi {
     /**
      * POST /documents : Upload a new document
      *
-     * @param body The document to upload (required)
+     * @param document The data to upload (required)
+     * @param metadata The metadata to upload (required)
+     * @param pdfFile The document to upload (required)
+     *
      * @return CREATED (status code 201)
      *         or BAD REQUEST (status code 400)
      *         or INTERNAL SERVER ERROR (status code 500)
@@ -322,14 +326,20 @@ public interface DocumentsApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/documents",
-        consumes = { "application/pdf" }
+        consumes = { "multi-part/form-data" }
     )
     
     default ResponseEntity<Void> documentsPost(
-        @Parameter(name = "body", description = "The document to upload", required = true) @Valid @RequestBody Document body
-    ) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+            @Parameter(name = "document", description = "The document data to upload", required = true)
+            @RequestPart("body") @Valid String document,
 
+            @Parameter(name = "metadata", description = "The related metadata to upload")
+            @RequestPart("meta") @Valid String metadata,
+
+            @Parameter(name = "file", description = "uploaded file", required = true)
+            @RequestPart("file") @Valid MultipartFile pdfFile
+            ) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
 }

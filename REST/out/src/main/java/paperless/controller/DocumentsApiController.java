@@ -7,11 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import org.springframework.web.multipart.MultipartFile;
 import paperless.models.Document;
 import paperless.models.DocumentsIdPreviewGet200Response;
 import paperless.models.Metadata;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,8 +74,12 @@ public class DocumentsApiController implements DocumentsApi {
 
     @Override
     @PostMapping("/documents")
-    public ResponseEntity<Void> documentsPost(@RequestBody Document document){
-        return documentService.createNewDocumentResponse(document);
+    public ResponseEntity<Void> documentsPost(
+            @RequestPart("document") String document,
+            @RequestPart("metadata") String metadata,
+            @RequestPart("file") MultipartFile pdfFile
+    ){
+        return documentService.createNewDocumentResponse(document, metadata, pdfFile);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
