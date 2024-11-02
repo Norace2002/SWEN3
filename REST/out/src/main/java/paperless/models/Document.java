@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.OffsetDateTime;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotNull;
@@ -30,13 +28,16 @@ public class Document {
   @Column
   private String id; //Maybe int or long - not decided yet
   
-  @Column @NotNull
+  @Column
+  @NotNull
   private String title;
 
-  @Column @Size(max = 500)
+  @Column
+  @Size(max = 500)
   private String description;
 
-  @Column @NotNull
+  @Column
+  @NotNull
   private String fileUrl;
 
   /**
@@ -74,11 +75,6 @@ public class Document {
     this.title = title;
   }
 
-  public Document description(String description) {
-    this.description = description;
-    return this;
-  }
-
   /**
    * Description of the document
    * @return description
@@ -92,11 +88,6 @@ public class Document {
 
   public void setDescription(String description) {
     this.description = description;
-  }
-
-  public Document fileUrl(String fileUrl) {
-    this.fileUrl = fileUrl;
-    return this;
   }
 
   /**

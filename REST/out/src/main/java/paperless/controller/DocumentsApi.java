@@ -326,7 +326,7 @@ public interface DocumentsApi {
     )
     
     default ResponseEntity<Void> documentsPost(
-        @Parameter(name = "body", description = "The document to upload", required = true) @Valid @RequestBody org.springframework.core.io.Resource body
+        @Parameter(name = "body", description = "The document to upload", required = true) @Valid @RequestBody Document body
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 

@@ -74,8 +74,8 @@ public class DocumentsApiController implements DocumentsApi {
 
     @Override
     @PostMapping("/documents")
-    public ResponseEntity<Void> documentsPost(@RequestBody Resource body){
-        return documentService.createNewDocumentResponse(body);
+    public ResponseEntity<Void> documentsPost(@RequestBody Document document){
+        return documentService.createNewDocumentResponse(document);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
