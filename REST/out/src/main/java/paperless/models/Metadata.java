@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,24 +25,27 @@ import jakarta.annotation.Generated;
 public class Metadata {
 
   @Id
+  @Column
   private String id;
 
-  private String title;
-
+  @Column
   private String author;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private OffsetDateTime uploadDate;
+  @Column
+  private String uploaddate;
+
+  @Column
+  private String filetype;
+
+  @Column
+  private int filesize;
 
   @Valid
+  @Column
   private List<String> tags = new ArrayList<>();
 
+  @Column
   private String version;
-
-  public Metadata id(String id) {
-    this.id = id;
-    return this;
-  }
 
   /**
    * Unique identifier for the document
@@ -56,31 +60,6 @@ public class Metadata {
 
   public void setId(String id) {
     this.id = id;
-  }
-
-  public Metadata title(String title) {
-    this.title = title;
-    return this;
-  }
-
-  /**
-   * Title of the document
-   * @return title
-   */
-  
-  @Schema(name = "title", description = "Title of the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("title")
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public Metadata author(String author) {
-    this.author = author;
-    return this;
   }
 
   /**
@@ -98,37 +77,20 @@ public class Metadata {
     this.author = author;
   }
 
-  public Metadata uploadDate(OffsetDateTime uploadDate) {
-    this.uploadDate = uploadDate;
-    return this;
-  }
-
   /**
    * Date when the document was uploaded
    * @return uploadDate
    */
+
   @Valid 
   @Schema(name = "uploadDate", description = "Date when the document was uploaded", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("uploadDate")
-  public OffsetDateTime getUploadDate() {
-    return uploadDate;
+  public String getUploadDate() {
+    return uploaddate;
   }
 
-  public void setUploadDate(OffsetDateTime uploadDate) {
-    this.uploadDate = uploadDate;
-  }
-
-  public Metadata tags(List<String> tags) {
-    this.tags = tags;
-    return this;
-  }
-
-  public Metadata addTagsItem(String tagsItem) {
-    if (this.tags == null) {
-      this.tags = new ArrayList<>();
-    }
-    this.tags.add(tagsItem);
-    return this;
+  public void setUploadDate(String uploadDate) {
+    this.uploaddate = uploadDate;
   }
 
   /**
@@ -146,8 +108,11 @@ public class Metadata {
     this.tags = tags;
   }
 
-  public Metadata version(String version) {
-    this.version = version;
+  public Metadata addTagsItem(String tagsItem) {
+    if (this.tags == null) {
+      this.tags = new ArrayList<>();
+    }
+    this.tags.add(tagsItem);
     return this;
   }
 
@@ -166,6 +131,28 @@ public class Metadata {
     this.version = version;
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  @Schema(name = "filetype", description = "Type of file (pdf, txt etc.)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("filetype")
+  public String getFiletype() {
+    return filetype;
+  }
+
+  public void setFiletype(String filetype) {
+    this.filetype = filetype;
+  }
+
+  @Schema(name = "filesize", description = "Size of file in bytes", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("filesize")
+  public int getFilesize() {
+    return filesize;
+  }
+
+  public void setFilesize(int filesize) {
+    this.filesize = filesize;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -176,16 +163,12 @@ public class Metadata {
     }
     Metadata metadata = (Metadata) o;
     return Objects.equals(this.id, metadata.id) &&
-        Objects.equals(this.title, metadata.title) &&
         Objects.equals(this.author, metadata.author) &&
-        Objects.equals(this.uploadDate, metadata.uploadDate) &&
+        Objects.equals(this.uploaddate, metadata.uploaddate) &&
+        Objects.equals(this.filetype, metadata.filetype)&&
+        Objects.equals(this.filesize, metadata.filesize)&&
         Objects.equals(this.tags, metadata.tags) &&
         Objects.equals(this.version, metadata.version);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, title, author, uploadDate, tags, version);
   }
 
   @Override
@@ -193,9 +176,10 @@ public class Metadata {
     StringBuilder sb = new StringBuilder();
     sb.append("class Metadata {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    author: ").append(toIndentedString(author)).append("\n");
-    sb.append("    uploadDate: ").append(toIndentedString(uploadDate)).append("\n");
+    sb.append("    uploadDate: ").append(toIndentedString(uploaddate)).append("\n");
+    sb.append("    fileType: ").append(toIndentedString(filetype)).append("\n");
+    sb.append("    fileSize: ").append(toIndentedString(filesize)).append("\n");
     sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
     sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("}");
