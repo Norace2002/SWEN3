@@ -1,16 +1,29 @@
 import Sidebar from "./sidebar";
-import React from "react";
+import React, { useRef } from "react";
 
 function UploadPage(){
+
+    const fileInputRef = useRef(null);
+
+    const handleUploadClick = () => {
+        fileInputRef.current.click();
+    };
     return(
         <div style={styles.pageContainer}>
             {/* header-area */}
             <div style={styles.header}>Upload Document</div>
 
             {/* content-area */}
-            <div style={styles.uploadBox}>
+            <div style={styles.uploadBox} onClick={handleUploadClick}>
                 Drag your Document here ...
             </div>
+
+            {/* input */}
+            <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+            />
         </div>
     );
 }
