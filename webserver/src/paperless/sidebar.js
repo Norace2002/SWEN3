@@ -12,29 +12,25 @@ function Button({ onClick, title, style }) {
 function Sidebar() {
     const navigate = useNavigate(); // Hook for navigation
 
-    let currentPage = '/documents';
-
-    // Helper function to handle navigation
     const handleNavigation = (page) => {
         navigate(page);
-        currentPage = page;
     };
 
     return (
         <div style={styles.sidebar}>
             <Button
                 onClick={() => handleNavigation('/profile')}
-                style={currentPage === 'profile' ? styles.activeButton : styles.button}
+                style={styles.button}
                 title="Profile"
             />
             <Button
                 onClick={() => handleNavigation('/documents')}
-                style={currentPage === 'documents' ? styles.activeButton : styles.button}
+                style={styles.button}
                 title="Documents"
             />
             <Button
                 onClick={() => handleNavigation('/upload')}
-                style={currentPage === 'upload' ? styles.activeButton : styles.button}
+                style={styles.button}
                 title="Upload"
             />
         </div>
@@ -45,7 +41,7 @@ function Sidebar() {
 const styles = {
     sidebar: {
         width: '10%',
-        height: '100%',
+        height: '100vh',
         padding: '20px',
         backgroundColor: '#f0f0f0',
         display: 'flex',
@@ -59,15 +55,7 @@ const styles = {
         cursor: 'pointer',
         textAlign: 'left',
     },
-    activeButton: {
-        padding: '10px 20px',
-        margin: '10px 0',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        border: 'none',
-        cursor: 'pointer',
-        textAlign: 'left',
-    },
 };
+
 
 export default Sidebar;
