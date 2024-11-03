@@ -7,9 +7,7 @@ import PreviewPage from './paperless/preview';
 import ProfilePage from './paperless/profile';
 import Sidebar from './paperless/sidebar';
 import DocumentsPage from './paperless/documentsPage';
-
-
-
+import DocumentDetailsPage from './paperless/documentDetails';
 
 function App() {
     return (
@@ -28,7 +26,7 @@ function App() {
                         <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/documents" element={<DocumentsPage />} />
                         <Route path="/upload" element={<UploadPage />} />
-
+                        <Route path="/documents/:id" element={<DocumentDetailsPage />} />
                         {/* Catch-all route to handle unknown paths */}
                         <Route path="*" element={<Navigate to={LandingPage} />} />
                     </Routes>

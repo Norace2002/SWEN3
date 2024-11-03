@@ -1,25 +1,23 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function DocumentsPage() {
     return (
         <div style={styles.pageContainer}>
-            {/* header-area */}
             <div style={styles.header}>DOCUMENTS</div>
-
-            {/* search */}
             <div style={styles.searchContainer}>
                 <input type="text" placeholder="Search" style={styles.searchInput} />
             </div>
-
-            {/* document placeholder */}
             <div style={styles.gridWrapper}>
                 <div style={styles.gridContainer}>
                     {[...Array(8)].map((_, index) => (
-                        <div key={index} style={styles.documentTile}>
-                            <div style={styles.documentImage}></div>
-                            <div style={styles.documentText}>Document XYZ</div>
-                            <div style={styles.documentDate}>dd.mm.yyy</div>
-                        </div>
+                        <Link to={`/documents/${index}`} key={index} style={styles.documentLink}>
+                            <div style={styles.documentTile}>
+                                <div style={styles.documentImage}></div>
+                                <div style={styles.documentText}>Document XYZ</div>
+                                <div style={styles.documentDate}>dd.mm.yyy</div>
+                            </div>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -31,13 +29,10 @@ const styles = {
     pageContainer: {
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
         height: '100vh',
-        width: '100%',
         backgroundColor: '#333',
         boxSizing: 'border-box',
-        margin: 0,
+        paddingLeft: '10%',
         padding: 0,
     },
     header: {
@@ -52,7 +47,6 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         padding: '20px',
-        backgroundColor: '#333',
     },
     searchInput: {
         width: '600px',
@@ -73,6 +67,9 @@ const styles = {
         gap: '20px',
         padding: '20px',
         justifyItems: 'center',
+    },
+    documentLink: {
+        textDecoration: 'none',
     },
     documentTile: {
         backgroundColor: '#4CAF50',

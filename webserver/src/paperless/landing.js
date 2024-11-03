@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import axios from 'axios';
 
 function LandingPage(){
@@ -22,14 +22,6 @@ function LandingPage(){
                 }
             })
     }
-
-    // Problem with useEffect
-    // Uncaught TypeError: Cannot read properties of null (reading 'useEffect')
-    /*
-    useEffect(() => {
-        updateDocuments();
-    }, []);
-    */
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Searchbar shenanigans
@@ -82,4 +74,4 @@ const styles = {
     }
 }
 
-export default LandingPage();
+export default LandingPage;
