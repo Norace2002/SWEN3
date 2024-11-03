@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Button({ onClick, title, style }) {
     return (
@@ -11,26 +11,46 @@ function Button({ onClick, title, style }) {
 
 function Sidebar() {
     const navigate = useNavigate(); // Hook for navigation
+    const location = useLocation(); // Hook to get current location
 
     const handleNavigation = (page) => {
         navigate(page);
+    };
+
+    const isActive = (path) => {
+        if (path === '/documents') {
+            return location.pathname.startsWith('/documents');
+        }
+        return location.pathname === path;
     };
 
     return (
         <div style={styles.sidebar}>
             <Button
                 onClick={() => handleNavigation('/profile')}
-                style={styles.button}
+                style={{
+                    ...styles.button,
+                    backgroundColor: isActive('/profile') ? '#4CAF50' : '#fff',
+                    color: isActive('/profile') ? '#fff' : '#000'
+                }}
                 title="Profile"
             />
             <Button
                 onClick={() => handleNavigation('/documents')}
-                style={styles.button}
+                style={{
+                    ...styles.button,
+                    backgroundColor: isActive('/documents') ? '#4CAF50' : '#fff',
+                    color: isActive('/documents') ? '#fff' : '#000'
+                }}
                 title="Documents"
             />
             <Button
                 onClick={() => handleNavigation('/upload')}
-                style={styles.button}
+                style={{
+                    ...styles.button,
+                    backgroundColor: isActive('/upload') ? '#4CAF50' : '#fff',
+                    color: isActive('/upload') ? '#fff' : '#000'
+                }}
                 title="Upload"
             />
         </div>
@@ -50,12 +70,11 @@ const styles = {
     button: {
         padding: '10px 20px',
         margin: '10px 0',
-        backgroundColor: '#fff',
         border: '1px solid #ccc',
         cursor: 'pointer',
         textAlign: 'left',
+        transition: 'background-color 0.3s ease',
     },
 };
-
 
 export default Sidebar;
