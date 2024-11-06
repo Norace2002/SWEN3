@@ -17,12 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import paperless.models.Document;
 import paperless.models.DocumentsIdPreviewGet200Response;
-import paperless.models.Metadata;
 
 import paperless.rabbitmq.RabbitMqSender;
 import paperless.repositories.DocumentRepository;
-import paperless.repositories.MetadataRepository;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,9 +30,6 @@ public class DocumentService {
 
     @Autowired
     private DocumentRepository documentRepository;
-
-    @Autowired
-    private MetadataRepository metadataRepository;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -66,25 +62,7 @@ public class DocumentService {
         }
     }
 
-    public Metadata stringToMetadata(String input){
-        try{
-            return this.getObjectMapper().readValue(input, new TypeReference<Metadata>(){});
-        }
-        catch(JsonProcessingException e){
-            throw new RuntimeException(e);
-        }
-    }
-
     public String documentToString(Document model){
-        try{
-            return this.getObjectMapper().writeValueAsString(model);
-        }
-        catch(JsonProcessingException e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String metadataToString(Metadata model){
         try{
             return this.getObjectMapper().writeValueAsString(model);
         }
@@ -147,11 +125,11 @@ public class DocumentService {
         }
     }
 
-    public ResponseEntity<Metadata> getDocumentMetadataResponse(String id){
-        Optional<Metadata> optionalData = metadataRepository.findById(id);
+    public ResponseEntity<Document> getDocumentMetadataResponse(String id){
+        Optional<Document> optionalData = documentRepository.findById(id);
 
         if(optionalData.isPresent()){
-            Metadata returnData = optionalData.get();
+            Document returnData = optionalData.get();
             return new ResponseEntity<>(returnData, HttpStatus.OK);
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -160,19 +138,18 @@ public class DocumentService {
 
     //ToDo:
     // * find out how a file is sent from frontend and how it will be stored
-    public ResponseEntity<Void> createNewDocumentResponse(String documentString, String metadataString, MultipartFile pdfFile){
+    public ResponseEntity<Void> createNewDocumentResponse(String documentString, MultipartFile pdfFile){
         Document documentModel = stringToDocument(documentString);
-        Metadata metadataModel = stringToMetadata(metadataString);
 
         try{
-            // rabbitmq message
+            // rabbitmq message / handle actual file
             this.rabbitMqSender.send();
+            byte[] byteArray = pdfFile.getBytes();
 
-            // save document data before metadata -> fk constraint
+            // save document data
             documentRepository.save(documentModel);
-            metadataRepository.save(metadataModel);
             return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch(RuntimeException e){
+        } catch(RuntimeException | IOException e){
             System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

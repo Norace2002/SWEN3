@@ -10,7 +10,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import paperless.models.Document;
 import paperless.models.DocumentsIdPreviewGet200Response;
-import paperless.models.Metadata;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +60,7 @@ public class DocumentsApiController{
     }
 
     @GetMapping("/documents/{id}/metadata")
-    public ResponseEntity<Metadata> documentsIdMetadataGet(@PathVariable String id){
+    public ResponseEntity<Document> documentsIdMetadataGet(@PathVariable String id){
         return documentService.getDocumentMetadataResponse(id);
     }
 
@@ -70,10 +69,9 @@ public class DocumentsApiController{
     @PostMapping("/documents")
     public ResponseEntity<Void> documentsPost(
             @RequestPart("document") String document,
-            @RequestPart("metadata") String metadata,
             @RequestPart("file") MultipartFile pdfFile
     ){
-        return documentService.createNewDocumentResponse(document, metadata, pdfFile);
+        return documentService.createNewDocumentResponse(document, pdfFile);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
