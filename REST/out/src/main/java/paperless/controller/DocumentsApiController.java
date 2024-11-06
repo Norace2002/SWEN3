@@ -22,7 +22,7 @@ import paperless.services.DocumentService;
 @CrossOrigin(origins = "http://localhost:8080")
 @Controller
 @RequestMapping("${openapi.documentManagerSystemServer.base-path:}")
-public class DocumentsApiController implements DocumentsApi {
+public class DocumentsApiController{
 
     private final NativeWebRequest request;
 
@@ -34,26 +34,22 @@ public class DocumentsApiController implements DocumentsApi {
     @Autowired
     private DocumentService documentService;
 
-    @Override
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
     @GetMapping("/documents")
     public ResponseEntity<List<Document>> documentsGet(){
         return documentService.getAllDocumentsResponse();
     }
 
-    @Override
     @GetMapping("/documents/{id}")
     public ResponseEntity<Document> documentsIdGet(@PathVariable String id){
         return documentService.getDocumentByIdResponse(id);
     }
 
-    @Override
     @GetMapping("/documents/{id}/download")
     public ResponseEntity<Resource> documentsIdDownloadGet(@PathVariable String id){
         return documentService.downloadDocumentResponse(id);
@@ -64,7 +60,6 @@ public class DocumentsApiController implements DocumentsApi {
         return documentService.getDocumentPreviewResponse(id);
     }
 
-    @Override
     @GetMapping("/documents/{id}/metadata")
     public ResponseEntity<Metadata> documentsIdMetadataGet(@PathVariable String id){
         return documentService.getDocumentMetadataResponse(id);
@@ -72,7 +67,6 @@ public class DocumentsApiController implements DocumentsApi {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
     @PostMapping("/documents")
     public ResponseEntity<Void> documentsPost(
             @RequestPart("document") String document,
@@ -84,7 +78,6 @@ public class DocumentsApiController implements DocumentsApi {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
     @PutMapping("/documents/{id}")
     public ResponseEntity<Void> documentsIdPut(@PathVariable String id, @RequestBody Document document) {
         return documentService.editExistingDocumentResponse(id, document);
@@ -92,7 +85,6 @@ public class DocumentsApiController implements DocumentsApi {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
     @DeleteMapping("/documents/{id}")
     public ResponseEntity<Void> documentsIdDelete(@PathVariable String id){
         return documentService.deleteExistingDocumentResponse(id);
