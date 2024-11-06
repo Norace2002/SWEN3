@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import org.springframework.web.multipart.MultipartFile;
+import paperless.mapper.DocumentDTO;
 import paperless.models.Document;
 import paperless.models.DocumentsIdPreviewGet200Response;
 
@@ -40,34 +41,34 @@ public class DocumentsApiController{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @GetMapping("/documents")
-    public ResponseEntity<List<Document>> documentsGet(){
+    public ResponseEntity<List<DocumentDTO>> getDocumentDtos(){
         return documentService.getAllDocumentsResponse();
     }
 
     @GetMapping("/documents/{id}")
-    public ResponseEntity<Document> documentsIdGet(@PathVariable String id){
+    public ResponseEntity<DocumentDTO> getDocumentDtoById(@PathVariable String id){
         return documentService.getDocumentByIdResponse(id);
     }
 
     @GetMapping("/documents/{id}/download")
-    public ResponseEntity<Resource> documentsIdDownloadGet(@PathVariable String id){
+    public ResponseEntity<Resource> getDocumentDownload(@PathVariable String id){
         return documentService.downloadDocumentResponse(id);
     }
 
     @GetMapping("/documents/{id}/preview")
-    public ResponseEntity<DocumentsIdPreviewGet200Response> documentsIdPreviewGet(@PathVariable String id){
+    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreview(@PathVariable String id){
         return documentService.getDocumentPreviewResponse(id);
     }
 
     @GetMapping("/documents/{id}/metadata")
-    public ResponseEntity<Document> documentsIdMetadataGet(@PathVariable String id){
+    public ResponseEntity<Document> getDocumentMetadata(@PathVariable String id){
         return documentService.getDocumentMetadataResponse(id);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @PostMapping("/documents")
-    public ResponseEntity<Void> documentsPost(
+    public ResponseEntity<Void> postDocument(
             @RequestPart("document") String document,
             @RequestPart("file") MultipartFile pdfFile
     ){
@@ -77,14 +78,14 @@ public class DocumentsApiController{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @PutMapping("/documents/{id}")
-    public ResponseEntity<Void> documentsIdPut(@PathVariable String id, @RequestBody Document document) {
+    public ResponseEntity<Void> editDocumentById(@PathVariable String id, @RequestBody Document document) {
         return documentService.editExistingDocumentResponse(id, document);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @DeleteMapping("/documents/{id}")
-    public ResponseEntity<Void> documentsIdDelete(@PathVariable String id){
+    public ResponseEntity<Void> deleteDocumentById(@PathVariable String id){
         return documentService.deleteExistingDocumentResponse(id);
     }
 

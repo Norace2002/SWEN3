@@ -17,6 +17,8 @@ import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGe
             "paperless.controller" ,
             "paperless.config",
             "paperless.repositories",
+            "paperless.mapper",
+            "paperless.models",
             "paperless.rabbitmq"
     },
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
