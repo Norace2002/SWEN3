@@ -1,8 +1,21 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 import '../DocumentsPage.css';
+import axios from 'axios';
+
 
 function DocumentsPage() {
+
+    // Save documents in documents array including setter
+    const [documents, setDocuments] = useState([]);
+
+    useEffect(() => {
+        async function fetchDocuments() {
+            const data = await loadDocuments(); // Annahme: loadDocuments() gibt ein Array von Dokumenten zurück
+            setDocuments(data);
+        }
+        fetchDocuments();
+    }, []);
     return (
         <div className="page-container">
             <div className="header">DOCUMENTS</div>
@@ -11,12 +24,16 @@ function DocumentsPage() {
             </div>
             <div className="grid-wrapper">
                 <div className="grid-container">
-                    {[...Array(8)].map((_, index) => (
-                        <Link to={`/documents/${index}`} key={index} className="document-link">
+                    {documents.map((document) => (
+                        <Link
+                            to={`/documents/${document.id}`}
+                            key={document.id}
+                            className="document-link"
+                        >
                             <div className="document-tile">
                                 <div className="document-image"></div>
-                                <div className="document-text">Document XYZ</div>
-                                <div className="document-date">dd.mm.yyy</div>
+                                <div className="document-text">{document.title}</div>
+                                <div className="document-date">placeholder</div>
                             </div>
                         </Link>
                     ))}
@@ -24,6 +41,31 @@ function DocumentsPage() {
             </div>
         </div>
     );
+}
+
+async function loadDocuments() {
+    console.log("Loading Documents...");
+    // Loading Documents
+    try {
+        const response = await axios.get('http://127.0.0.1:8081/documents');
+        console.log("API Response:", response.data);
+        return response.data;
+
+    } catch(err) {
+        if (err.response) {
+            // The request was made and the server responded with a status code
+            console.error("Error status:", err.response.status);
+            console.error("Error data:", err.response.data);
+        } else if (err.request) {
+            // The request was made but no response was received
+            console.error("No response received:", err.request);
+        } else {
+            // Something happened in setting up the request that triggered an error
+            console.error("Error:", err.message);
+        }
+    }
+
+    return [];
 }
 
 export default DocumentsPage;
