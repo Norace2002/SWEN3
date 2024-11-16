@@ -1,20 +1,16 @@
 CREATE TABLE IF NOT EXISTS document (
     id VARCHAR(255) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
-    file_url VARCHAR(255) NOT NULL
+    upload_date TIMESTAMP NOT NULL,
+    file_type VARCHAR(255) NOT NULL,
+    file_size INTEGER NOT NULL,
+    file_url VARCHAR(255) NOT NULL,
+    tags VARCHAR(255)[],
+    version INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tag (
     name VARCHAR(255) PRIMARY KEY
-);
-
-CREATE TABLE IF NOT EXISTS metadata (
-    id VARCHAR(255) PRIMARY KEY REFERENCES document(id) ON DELETE CASCADE,
-    author VARCHAR(255) NOT NULL,
-    uploaddate TIMESTAMP NOT NULL,
-    filetype VARCHAR(255) NOT NULL,
-    filesize INTEGER NOT NULL,
-    tags VARCHAR(255)[],
-    version INTEGER NOT NULL
 );

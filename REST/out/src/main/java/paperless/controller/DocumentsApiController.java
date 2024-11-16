@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import org.springframework.web.multipart.MultipartFile;
+import paperless.mapper.DocumentDTO;
 import paperless.models.Document;
 import paperless.models.DocumentsIdPreviewGet200Response;
-import paperless.models.Metadata;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +22,7 @@ import paperless.services.DocumentService;
 @CrossOrigin(origins = "http://localhost:8080")
 @Controller
 @RequestMapping("${openapi.documentManagerSystemServer.base-path:}")
-public class DocumentsApiController implements DocumentsApi {
+public class DocumentsApiController{
 
     private final NativeWebRequest request;
 
@@ -34,67 +34,58 @@ public class DocumentsApiController implements DocumentsApi {
     @Autowired
     private DocumentService documentService;
 
-    @Override
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
     @GetMapping("/documents")
-    public ResponseEntity<List<Document>> documentsGet(){
+    public ResponseEntity<List<DocumentDTO>> getDocumentDtos(){
         return documentService.getAllDocumentsResponse();
     }
 
-    @Override
     @GetMapping("/documents/{id}")
-    public ResponseEntity<Document> documentsIdGet(@PathVariable String id){
+    public ResponseEntity<DocumentDTO> getDocumentDtoById(@PathVariable String id){
         return documentService.getDocumentByIdResponse(id);
     }
 
-    @Override
     @GetMapping("/documents/{id}/download")
-    public ResponseEntity<Resource> documentsIdDownloadGet(@PathVariable String id){
+    public ResponseEntity<Resource> getDocumentDownload(@PathVariable String id){
         return documentService.downloadDocumentResponse(id);
     }
 
     @GetMapping("/documents/{id}/preview")
-    public ResponseEntity<DocumentsIdPreviewGet200Response> documentsIdPreviewGet(@PathVariable String id){
+    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreview(@PathVariable String id){
         return documentService.getDocumentPreviewResponse(id);
     }
 
-    @Override
     @GetMapping("/documents/{id}/metadata")
-    public ResponseEntity<Metadata> documentsIdMetadataGet(@PathVariable String id){
+    public ResponseEntity<Document> getDocumentMetadata(@PathVariable String id){
         return documentService.getDocumentMetadataResponse(id);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
     @PostMapping("/documents")
-    public ResponseEntity<Void> documentsPost(
+    public ResponseEntity<Void> postDocument(
             @RequestPart("document") String document,
-            @RequestPart("metadata") String metadata,
             @RequestPart("file") MultipartFile pdfFile
     ){
-        return documentService.createNewDocumentResponse(document, metadata, pdfFile);
+        return documentService.createNewDocumentResponse(document, pdfFile);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
     @PutMapping("/documents/{id}")
-    public ResponseEntity<Void> documentsIdPut(@PathVariable String id, @RequestBody Document document) {
+    public ResponseEntity<Void> editDocumentById(@PathVariable String id, @RequestBody Document document) {
         return documentService.editExistingDocumentResponse(id, document);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Override
     @DeleteMapping("/documents/{id}")
-    public ResponseEntity<Void> documentsIdDelete(@PathVariable String id){
+    public ResponseEntity<Void> deleteDocumentById(@PathVariable String id){
         return documentService.deleteExistingDocumentResponse(id);
     }
 
