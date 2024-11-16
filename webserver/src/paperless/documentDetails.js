@@ -1,17 +1,36 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 function DocumentDetailsPage() {
+    const {id} = useParams();
+    const [documentData, setDocumentData] = useState([]);
+
+
+    useEffect(() => {
+        if (id) {
+            // REST call
+            axios.get(`http://127.0.0.1:8081/documents/${id}`)
+                .then((response) => {
+                    setDocumentData(response.data); // Save Document
+                })
+                .catch((error) => {
+                    console.error("Fehler beim Laden des Dokuments:", error);
+                });
+        }
+    }, [id]); // //effect trigger every time id changes
+
     return (
         <div style={styles.pageContainer}>
             <div style={styles.header}>Document XYZ</div>
             <div style={styles.contentContainer}>
                 <div style={styles.details}>
-                    <p style={styles.detailItem}><strong>Document Title:</strong> title</p>
+                    <p style={styles.detailItem}><strong>Document Title:</strong> {documentData.title}</p>
                     <p style={styles.detailItem}><strong>Upload date:</strong> date </p>
                     <p style={styles.detailItem}><strong>Last edited:</strong> date </p>
                     <p style={styles.detailItem}><strong>Filetype:</strong> type </p>
                     <p style={styles.detailItem}><strong>Size:</strong> size </p>
-                    <p style={styles.detailItem}><strong>Description:</strong> description </p>
+                    <p style={styles.detailItem}><strong>Description:</strong> {documentData.description }</p>
 
                     {/* buttons */}
                     <div style={styles.buttonContainer}>
