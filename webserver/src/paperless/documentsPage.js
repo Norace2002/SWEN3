@@ -11,7 +11,7 @@ function DocumentsPage() {
 
     useEffect(() => {
         async function fetchDocuments() {
-            const data = await loadDocuments(); // Annahme: loadDocuments() gibt ein Array von Dokumenten zurück
+            const data = await loadDocuments();
             setDocuments(data);
         }
         fetchDocuments();
@@ -44,11 +44,10 @@ function DocumentsPage() {
 }
 
 async function loadDocuments() {
-    console.log("Loading Documents...");
     // Loading Documents
     try {
         const response = await axios.get('http://127.0.0.1:8081/documents');
-        console.log("API Response:", response.data);
+        //console.log("API Response:", response.data);
         return response.data;
 
     } catch(err) {

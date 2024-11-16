@@ -10,7 +10,7 @@ function DocumentDetailsPage() {
     useEffect(() => {
         if (id) {
             // REST call
-            axios.get(`http://127.0.0.1:8081/documents/${id}`)
+            axios.get(`http://127.0.0.1:8081/documents/${id}/metadata`)
                 .then((response) => {
                     setDocumentData(response.data); // Save Document
                 })
@@ -26,10 +26,10 @@ function DocumentDetailsPage() {
             <div style={styles.contentContainer}>
                 <div style={styles.details}>
                     <p style={styles.detailItem}><strong>Document Title:</strong> {documentData.title}</p>
-                    <p style={styles.detailItem}><strong>Upload date:</strong> date </p>
-                    <p style={styles.detailItem}><strong>Last edited:</strong> date </p>
-                    <p style={styles.detailItem}><strong>Filetype:</strong> type </p>
-                    <p style={styles.detailItem}><strong>Size:</strong> size </p>
+                    <p style={styles.detailItem}><strong>Upload date:</strong> {documentData.uploadDate} </p>
+                    <p style={styles.detailItem}><strong>Last edited:</strong> {documentData.uploadDate} </p>
+                    <p style={styles.detailItem}><strong>Filetype:</strong> {documentData.fileType} </p>
+                    <p style={styles.detailItem}><strong>Size:</strong> {documentData.fileSize} </p>
                     <p style={styles.detailItem}><strong>Description:</strong> {documentData.description }</p>
 
                     {/* buttons */}
