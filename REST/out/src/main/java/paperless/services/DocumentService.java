@@ -44,6 +44,9 @@ public class DocumentService {
     @Autowired
     private RabbitMqSender rabbitMqSender;
 
+    @Autowired
+    private MinIOService minIOStorage;
+
     // @Getter
     // for whatever reason the getter from lombok here fails (02.11.24) -> manually created below
     private final ObjectMapper objectMapper;
@@ -108,6 +111,9 @@ public class DocumentService {
     public ResponseEntity<Resource> downloadDocumentResponse(String id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
+        //ToDo:Test minIO Download
+        String filecontent = new String(minIOStorage.download(id));
+
         if(optionalDocument.isPresent()) {
             Document foundDocument = optionalDocument.get();
             Resource downloadResorce;
@@ -159,6 +165,9 @@ public class DocumentService {
             // rabbitmq message / handle actual file
             this.rabbitMqSender.send();
             byte[] byteArray = pdfFile.getBytes();
+
+            // minIO store File
+            minIOStorage.upload(documentModel.getTitle(),byteArray);
 
             // save document data
             documentRepository.save(documentModel);
