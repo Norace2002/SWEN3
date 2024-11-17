@@ -1,32 +1,33 @@
-# Stage 1: Build the application
-FROM maven:3-eclipse-temurin-17-alpine AS build
+# Use an official OpenJDK runtime as a parent image
+FROM openjdk:17-jdk-slim AS build
+
+# Install Maven
+RUN apt-get update && \
+    apt-get install -y maven && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy only the pom.xml first (to leverage Maven's dependency caching)
-COPY ./out/pom.xml .
-
-# Pre-download dependencies (cached if pom.xml doesn't change)
-RUN mvn dependency:go-offline -B
-
-# Copy the rest of the source code
+# Copy the Maven project files from the Rest subdirectory into the container
+COPY ./out/pom.xml ./
 COPY ./out/src ./src
 
-# Build the application (skipping tests for faster builds)
+# Run Maven build to generate the JAR file
 RUN mvn clean package -DskipTests
 
-# Stage 2: Create a lightweight runtime container
+# Step 2: Create a lightweight JDK container and copy the JAR from the build stage
 FROM openjdk:17-jdk-slim
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the JAR file from the build stage
-COPY --from=build /app/target/*.jar /app/RestServer.jar
+# Copy the JAR file from the build stage to the app directory
+COPY --from=build /app/target/openapi-spring-1.0.11.jar /app/RestServer.jar
 
 # Expose the port that your Spring Boot app runs on
-EXPOSE 8081
+EXPOSE 8081:8081
 
 # Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "/app/RestServer.jar"]
