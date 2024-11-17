@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.io.Resource;
@@ -16,17 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import paperless.mapper.DocumentDTO;
-import paperless.mapper.DocumentMapper;
-
 import paperless.models.Document;
 import paperless.models.DocumentsIdPreviewGet200Response;
+import paperless.models.Metadata;
 
 import paperless.rabbitmq.RabbitMqSender;
 import paperless.repositories.DocumentRepository;
+import paperless.repositories.MetadataRepository;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +32,8 @@ public class DocumentService {
     @Autowired
     private DocumentRepository documentRepository;
 
-    private final DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
+    @Autowired
+    private MetadataRepository metadataRepository;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -49,7 +46,7 @@ public class DocumentService {
 
     // @Getter
     // for whatever reason the getter from lombok here fails (02.11.24) -> manually created below
-    private final ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     public DocumentService(){
         this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
@@ -72,7 +69,25 @@ public class DocumentService {
         }
     }
 
+    public Metadata stringToMetadata(String input){
+        try{
+            return this.getObjectMapper().readValue(input, new TypeReference<Metadata>(){});
+        }
+        catch(JsonProcessingException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public String documentToString(Document model){
+        try{
+            return this.getObjectMapper().writeValueAsString(model);
+        }
+        catch(JsonProcessingException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String metadataToString(Metadata model){
         try{
             return this.getObjectMapper().writeValueAsString(model);
         }
@@ -83,23 +98,16 @@ public class DocumentService {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public ResponseEntity<List<DocumentDTO>> getAllDocumentsResponse(){
-        List<Document> documents = documentRepository.findAll();
-        List<DocumentDTO> documentDTOs = new ArrayList<>();
-
-        for(Document doc : documents){
-            documentDTOs.add(documentMapper.documentToDocumentDTO(doc));
-        }
-        return new ResponseEntity<>(documentDTOs, HttpStatus.OK);
+    public ResponseEntity<List<Document>> getAllDocumentsResponse(){
+        return new ResponseEntity<>(documentRepository.findAll(), HttpStatus.OK);
     }
 
-    public ResponseEntity<DocumentDTO> getDocumentByIdResponse(String id){
+    public ResponseEntity<Document> getDocumentByIdResponse(String id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
         if(optionalDocument.isPresent()){
             Document returnDocument = optionalDocument.get();
-            DocumentDTO dto = documentMapper.documentToDocumentDTO(returnDocument);
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+            return new ResponseEntity<>(returnDocument, HttpStatus.OK);
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -146,11 +154,11 @@ public class DocumentService {
         }
     }
 
-    public ResponseEntity<Document> getDocumentMetadataResponse(String id){
-        Optional<Document> optionalData = documentRepository.findById(id);
+    public ResponseEntity<Metadata> getDocumentMetadataResponse(String id){
+        Optional<Metadata> optionalData = metadataRepository.findById(id);
 
         if(optionalData.isPresent()){
-            Document returnData = optionalData.get();
+            Metadata returnData = optionalData.get();
             return new ResponseEntity<>(returnData, HttpStatus.OK);
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -159,21 +167,24 @@ public class DocumentService {
 
     //ToDo:
     // * find out how a file is sent from frontend and how it will be stored
-    public ResponseEntity<Void> createNewDocumentResponse(String documentString, MultipartFile pdfFile){
+    public ResponseEntity<Void> createNewDocumentResponse(String documentString, String metadataString, MultipartFile pdfFile){
         Document documentModel = stringToDocument(documentString);
+        Metadata metadataModel = stringToMetadata(metadataString);
 
         try{
-            // rabbitmq message / handle actual file
+            // rabbitmq message
             this.rabbitMqSender.send();
-            byte[] byteArray = pdfFile.getBytes();
+
 
             // minIO store File
             minIOStorage.upload(documentModel.getId(), byteArray);
 
             // save document data
+
             documentRepository.save(documentModel);
+            metadataRepository.save(metadataModel);
             return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch(RuntimeException | IOException e){
+        } catch(RuntimeException e){
             System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

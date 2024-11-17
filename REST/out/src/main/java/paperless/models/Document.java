@@ -1,9 +1,9 @@
 package paperless.models;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.OffsetDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -12,67 +12,99 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+
+import jakarta.annotation.Generated;
 
 @Entity
 public class Document {
   @Id
   @Column
-  @Schema(name = "id", description = "Unique identifier for the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("id")
   private String id; //Maybe int or long - not decided yet
-
+  
   @Column
-  @Schema(name = "title", description = "Title of the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("title")
+  @NotNull
   private String title;
 
   @Column
-  @Schema(name = "author", description = "Author of the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("author")
-  private String author;
-
-  @Column
   @Size(max = 500)
-  @Schema(name = "description", description = "Description of the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("description")
   private String description;
 
   @Column
-  @Schema(name = "uploadDate", description = "Date when the document was uploaded", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("uploadDate")
-  private String uploadDate;
-
-  @Column
-  @Schema(name = "fileType", description = "Type of file (pdf, txt etc.)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("fileType")
-  private String fileType;
-
-  @Column
-  @Schema(name = "fileSize", description = "Size of file in bytes", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("fileSize")
-  private int fileSize;
-
-  @Column
   @NotNull
-  @Schema(name = "fileUrl", description = "URL to access the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("fileUrl")
   private String fileUrl;
 
-  @Column
-  @Schema(name = "tags", description = "Tags associated with the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("tags")
-  private List<String> tags = new ArrayList<>();
+  /**
+   * Unique identifier for the document
+   * @return id
+   */
+  
+  @Schema(name = "id", description = "Unique identifier for the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("id")
+  public String getId() {
+    return id;
+  }
 
-  @Column
-  @Schema(name = "version", description = "Version of the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("version")
-  private String version;
+  public void setId(String id) {
+    this.id = id;
+  }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // auto-generated methods (keep, maybe useful)
+  public Document title(String title) {
+    this.title = title;
+    return this;
+  }
+
+  /**
+   * Title of the document
+   * @return title
+   */
+  
+  @Schema(name = "title", description = "Title of the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("title")
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  /**
+   * Description of the document
+   * @return description
+   */
+  
+  @Schema(name = "description", description = "Description of the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("description")
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  /**
+   * URL to access the document
+   * @return fileUrl
+   */
+  
+  @Schema(name = "fileUrl", description = "URL to access the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("fileUrl")
+  public String getFileUrl() {
+    return fileUrl;
+  }
+
+  public void setFileUrl(String fileUrl) {
+    this.fileUrl = fileUrl;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -96,102 +128,25 @@ public class Document {
 
   @Override
   public String toString() {
-      return "class Document {\n" +
-            "    id: " + toIndentedString(id) + "\n" +
-            "    title: " + toIndentedString(title) + "\n" +
-            "    description: " + toIndentedString(description) + "\n" +
-            "    fileUrl: " + toIndentedString(fileUrl) + "\n" +
-            "}";
+    StringBuilder sb = new StringBuilder();
+    sb.append("class Document {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
+    sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    fileUrl: ").append(toIndentedString(fileUrl)).append("\n");
+    sb.append("}");
+    return sb.toString();
   }
 
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
   private String toIndentedString(Object o) {
     if (o == null) {
       return "null";
     }
     return o.toString().replace("\n", "\n    ");
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // manual getters/setters since lombok is joking around
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getAuthor() {
-    return author;
-  }
-
-  public void setAuthor(String author) {
-    this.author = author;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getUploadDate() {
-    return uploadDate;
-  }
-
-  public void setUploadDate(String uploadDate) {
-    this.uploadDate = uploadDate;
-  }
-
-  public String getFileType() {
-    return fileType;
-  }
-
-  public void setFileType(String fileType) {
-    this.fileType = fileType;
-  }
-
-  public int getFileSize() {
-    return fileSize;
-  }
-
-  public void setFileSize(int fileSize) {
-    this.fileSize = fileSize;
-  }
-
-  public String getFileUrl() {
-    return fileUrl;
-  }
-
-  public void setFileUrl(String fileUrl) {
-    this.fileUrl = fileUrl;
-  }
-
-  public List<String> getTags() {
-    return tags;
-  }
-
-  public void setTags(List<String> tags) {
-    this.tags = tags;
-  }
-
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
   }
 }
 
