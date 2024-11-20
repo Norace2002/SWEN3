@@ -17,7 +17,7 @@ function App() {
                 <Sidebar />
 
                 {/* Main content area which will update based on routes */}
-                <div style={{ flex: 1, padding: '20px' }}>
+                <div style={{ flex: 1 }}>
                     <Routes>
                         {/* Default route to landing page */}
                         <Route path="/" element={<LandingPage />} />

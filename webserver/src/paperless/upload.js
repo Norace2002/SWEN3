@@ -1,13 +1,20 @@
-import Sidebar from "./sidebar";
 import React, { useRef, useState } from "react";
-import '../Upload.css';
+import "../Upload.css";
 
 let uidCounter = 3;
 
 function UploadPage() {
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [documentTitle, setDocumentTitle] = useState("document.pdf");
+    const handleSaveClick = () => {
+        setIsEditing(false);
+    };
 
+    const handleEditClick = () => {
+        setIsEditing(true);
+    };
 
     //-------------------- Input Events -------------------
     const handleUploadClick = () => {
@@ -19,6 +26,7 @@ function UploadPage() {
         const file = event.target.files[0];
         if (file) {
             setSelectedFile(file);
+            setDocumentTitle(file.name);
             console.log("Selected file:", file);
 
             uploadFile(file);
@@ -31,6 +39,7 @@ function UploadPage() {
         const file = event.dataTransfer.files[0];
         if (file) {
             setSelectedFile(file);
+            setDocumentTitle(file.name);
             console.log("Dropped file:", file);
 
             uploadFile(file);
@@ -94,29 +103,70 @@ function UploadPage() {
         <div className="page-container">
             {/* header-area */}
             <div className="header">Upload Document</div>
-
-            {/* content-area */}
-            <div
-                className="upload-box"
-                onClick={handleUploadClick}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-            >
-                {selectedFile
-                    ? `Selected: ${selectedFile.name}`
-                    : "Drag your Document here or click to upload"}
+            <div className="form-container">
+                <div className="form-row">
+                    <label className="label">Document Title:</label>
+                    {isEditing ? (
+                        <>
+                            <input
+                                className="input-field"
+                                type="text"
+                                value={documentTitle}
+                                onChange={(e) => setDocumentTitle(e.target.value)}
+                            />
+                            <button className="change-button" onClick={handleSaveClick}>
+                                Save
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <span className="text-display">{documentTitle}</span>
+                            <button className="change-button" onClick={handleEditClick}>
+                                Change
+                            </button>
+                        </>
+                    )}
+                </div>
+                <div className="form-row">
+                    <label className="label">Alternate Title:</label>
+                    <input className="input-field" type="text" />
+                </div>
+                <div className="form-row">
+                    <label className="label">Author:</label>
+                    <input className="input-field" type="text" />
+                </div>
+                <div className="form-row">
+                    <label className="label">Description:</label>
+                    <textarea></textarea>
+                </div>
+                <div className="form-row">
+                    <label className="label">Tags:</label>
+                    <button className="add-tag-button">+</button>
+                </div>
+                <div className="form-row">
+                    <label className="label"></label>
+                    <div
+                        className="upload-box"
+                        onClick={handleUploadClick}
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                    >
+                        {selectedFile
+                            ? `Selected: ${selectedFile.name}`
+                            : "Drag your Document here or click to upload"}
+                    </div>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                    />
+                </div>
+                <button className="upload-button">Upload</button>
             </div>
-
-            {/* input */}
-            <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-                //accept="application/pdf" //accept only pdf ? or not
-            />
         </div>
     );
 }
 
 export default UploadPage;
+
