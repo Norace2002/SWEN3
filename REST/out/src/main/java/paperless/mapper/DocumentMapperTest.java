@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import paperless.models.Document;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class DocumentMapperTest {
@@ -13,7 +15,7 @@ class DocumentMapperTest {
     @Test
     void testDocumentToDocumentDTO() {
         Document document = new Document();
-        document.setId("123");
+        document.setId(UUID.randomUUID());
         document.setTitle("Test Document");
 
         DocumentDTO documentDTO = documentMapper.documentToDocumentDTO(document);
