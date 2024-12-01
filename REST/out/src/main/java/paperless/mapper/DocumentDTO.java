@@ -1,19 +1,21 @@
 package paperless.mapper;
 
 
+import java.util.UUID;
+
 public class DocumentDTO {
 
-    private String id;
+    private UUID id;
     private String title;
     private String description;
 
     private String fileUrl;
 
-    public String getId(){
+    public UUID getId(){
         return id;
     }
 
-    public void setId(String id){
+    public void setId(UUID id){
         this.id = id;
     }
 

@@ -9,6 +9,7 @@ import jakarta.validation.ConstraintViolation;
 
 
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +28,7 @@ class DocumentTest {
     @Test
     void whenTitleIsNull_thenValidationFails() {
         Document document = new Document();
-        document.setId("123");
+        document.setId(UUID.randomUUID());
         document.setTitle(null); // Invalid value
 
         Set<ConstraintViolation<Document>> violations = validator.validate(document);
