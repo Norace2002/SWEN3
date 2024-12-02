@@ -113,7 +113,7 @@ public class DocumentService {
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
 
-        String filecontent = new String(minIOStorage.download(id));
+        String filecontent = new String(minIOStorage.download(String.valueOf(id)));
 
         if(optionalDocument.isPresent()) {
             Document foundDocument = optionalDocument.get();
@@ -168,7 +168,7 @@ public class DocumentService {
             byte[] byteArray = pdfFile.getBytes();
 
             // minIO store File
-            minIOStorage.upload(documentModel.getId(), byteArray);
+            minIOStorage.upload(String.valueOf(documentModel.getId()), byteArray);
 
             // save document data
             documentRepository.save(documentModel);
