@@ -10,6 +10,7 @@ services:
     depends_on:
       - webserver
       - database
+      - minio
       - rabbitmq
 
   webserver:
@@ -21,6 +22,16 @@ services:
     volumes:
       - ./webserver/src:/app/src
       - ./webserver/public:/app/public
+
+  ocr-service:
+    build:
+      context: ./OCR
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - minio
+      - rabbitmq
 
   database:
     image: postgres:15
