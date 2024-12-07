@@ -47,23 +47,27 @@ public class DocumentsApiController{
     }
 
     @GetMapping("/documents/{id}")
-    public ResponseEntity<DocumentDTO> getDocumentDtoById(@PathVariable UUID id){
-        return documentService.getDocumentByIdResponse(id);
+    public ResponseEntity<DocumentDTO> getDocumentDtoById(@PathVariable String id){
+        UUID uuid = UUID.fromString(id);
+        return documentService.getDocumentByIdResponse(uuid);
     }
 
     @GetMapping("/documents/{id}/download")
-    public ResponseEntity<Resource> getDocumentDownload(@PathVariable UUID id){
-        return documentService.downloadDocumentResponse(id);
+    public ResponseEntity<Resource> getDocumentDownload(@PathVariable String id){
+        UUID uuid = UUID.fromString(id);
+        return documentService.downloadDocumentResponse(uuid);
     }
 
     @GetMapping("/documents/{id}/preview")
-    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreview(@PathVariable UUID id){
-        return documentService.getDocumentPreviewResponse(id);
+    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreview(@PathVariable String id){
+        UUID uuid = UUID.fromString(id);
+        return documentService.getDocumentPreviewResponse(uuid);
     }
 
     @GetMapping("/documents/{id}/metadata")
-    public ResponseEntity<Document> getDocumentMetadata(@PathVariable UUID id){
-        return documentService.getDocumentMetadataResponse(id);
+    public ResponseEntity<Document> getDocumentMetadata(@PathVariable String id){
+        UUID uuid = UUID.fromString(id);
+        return documentService.getDocumentMetadataResponse(uuid);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,15 +83,17 @@ public class DocumentsApiController{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @PutMapping("/documents/{id}")
-    public ResponseEntity<Void> editDocumentById(@PathVariable UUID id, @RequestBody Document document) {
-        return documentService.editExistingDocumentResponse(id, document);
+    public ResponseEntity<Void> editDocumentById(@PathVariable String id, @RequestBody Document document) {
+        UUID uuid = UUID.fromString(id);
+        return documentService.editExistingDocumentResponse(uuid, document);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @DeleteMapping("/documents/{id}")
-    public ResponseEntity<Void> deleteDocumentById(@PathVariable UUID id){
-        return documentService.deleteExistingDocumentResponse(id);
+    public ResponseEntity<Void> deleteDocumentById(@PathVariable String id){
+        UUID uuid = UUID.fromString(id);
+        return documentService.deleteExistingDocumentResponse(uuid);
     }
 
 }
