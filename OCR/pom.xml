@@ -67,7 +67,7 @@
 		<dependency>
 			<groupId>net.sourceforge.tess4j</groupId>
 			<artifactId>tess4j</artifactId>
-			<version>5.4.0</version>
+			<version>4.1.0</version>
 		</dependency>
 
 		<!-- Ghost4J für Ghostscript-Integration -->
@@ -75,6 +75,12 @@
 			<groupId>org.ghost4j</groupId>
 			<artifactId>ghost4j</artifactId>
 			<version>1.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>4.1.0</version>
 		</dependency>
 	</dependencies>
 
