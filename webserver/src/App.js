@@ -17,10 +17,10 @@ function App() {
                 <Sidebar />
 
                 {/* Main content area which will update based on routes */}
-                <div style={{ flex: 1, padding: '20px' }}>
+                <div style={{ flex: 1 }}>
                     <Routes>
                         {/* Default route to landing page */}
-                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/" element={<DocumentsPage />} />
 
                         {/* Sidebar-routed pages */}
                         <Route path="/profile" element={<ProfilePage />} />
@@ -28,7 +28,7 @@ function App() {
                         <Route path="/upload" element={<UploadPage />} />
                         <Route path="/documents/:id" element={<DocumentDetailsPage />} />
                         {/* Catch-all route to handle unknown paths */}
-                        <Route path="*" element={<Navigate to={LandingPage} />} />
+                        <Route path="*" element={<Navigate to={DocumentsPage} />} />
                     </Routes>
                 </div>
             </div>

@@ -25,10 +25,12 @@ import paperless.models.DocumentsIdPreviewGet200Response;
 import paperless.rabbitmq.RabbitMqSender;
 import paperless.repositories.DocumentRepository;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class DocumentService {
@@ -93,7 +95,7 @@ public class DocumentService {
         return new ResponseEntity<>(documentDTOs, HttpStatus.OK);
     }
 
-    public ResponseEntity<DocumentDTO> getDocumentByIdResponse(String id){
+    public ResponseEntity<DocumentDTO> getDocumentByIdResponse(UUID id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
         if(optionalDocument.isPresent()){
@@ -108,12 +110,11 @@ public class DocumentService {
     //ToDo:
     // * find out if this actually works
     // * work with filepath/classpath/?
-    // * Test minIO Download
-    public ResponseEntity<Resource> downloadDocumentResponse(String id){
+    public ResponseEntity<Resource> downloadDocumentResponse(UUID id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
 
-        String filecontent = new String(minIOStorage.download(id));
+        String filecontent = new String(minIOStorage.download(String.valueOf(id)));
 
         if(optionalDocument.isPresent()) {
             Document foundDocument = optionalDocument.get();
@@ -132,7 +133,7 @@ public class DocumentService {
 
     //ToDo:
     // * implement some way of sending an image of the first page as a preview
-    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreviewResponse(String id){
+    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreviewResponse(UUID id){
         // how to manage preview?
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
@@ -146,7 +147,7 @@ public class DocumentService {
         }
     }
 
-    public ResponseEntity<Document> getDocumentMetadataResponse(String id){
+    public ResponseEntity<Document> getDocumentMetadataResponse(UUID id){
         Optional<Document> optionalData = documentRepository.findById(id);
 
         if(optionalData.isPresent()){
@@ -163,15 +164,17 @@ public class DocumentService {
         Document documentModel = stringToDocument(documentString);
 
         try{
-            // rabbitmq message / handle actual file
-            this.rabbitMqSender.send();
             byte[] byteArray = pdfFile.getBytes();
-
-            // minIO store File
-            minIOStorage.upload(documentModel.getId(), byteArray);
 
             // save document data
             documentRepository.save(documentModel);
+
+            // minIO store File
+            minIOStorage.upload(String.valueOf(documentModel.getId()), byteArray);
+
+            // rabbitmq message
+            this.rabbitMqSender.sendIdentifier(documentModel.getId().toString());
+
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch(RuntimeException | IOException e){
             System.out.println(e);
@@ -181,9 +184,9 @@ public class DocumentService {
 
     //ToDo:
     // * follow-up problem of not knowing how files are created/stored
-    public ResponseEntity<Void> editExistingDocumentResponse(String id, Document document){
+    public ResponseEntity<Void> editExistingDocumentResponse(UUID id, Document document){
         try{
-            documentRepository.deleteById(document.getId());
+            documentRepository.deleteById(id);
             documentRepository.save(document);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch(RuntimeException e){
@@ -192,7 +195,7 @@ public class DocumentService {
         }
     }
 
-    public ResponseEntity<Void> deleteExistingDocumentResponse(String id){
+    public ResponseEntity<Void> deleteExistingDocumentResponse(UUID id){
         try{
             documentRepository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);

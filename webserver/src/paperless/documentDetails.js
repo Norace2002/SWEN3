@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 function DocumentDetailsPage() {
     const {id} = useParams();
+    const navigate = useNavigate();
     const [documentData, setDocumentData] = useState([]);
 
 
@@ -19,6 +20,31 @@ function DocumentDetailsPage() {
                 });
         }
     }, [id]); // //effect trigger every time id changes
+
+    const deleteDocument = async () => {
+        if (!id) return;
+
+        const confirmDelete = window.confirm("Are you sure you want to delete this document?");
+        if (!confirmDelete) return;
+
+        try {
+            await axios.delete(`http://127.0.0.1:8081/documents/${id}`);
+            alert("Document deleted successfully.");
+            navigate('/documents');
+        } catch (error) {
+            if (error.response) {
+                console.error("Error status:", error.response.status);
+                console.error("Error data:", error.response.data);
+                alert("Error deleting the document. Please try again.");
+            } else if (error.request) {
+                console.error("No response received:", error.request);
+                alert("Server not responding. Please check your connection.");
+            } else {
+                console.error("Error:", error.message);
+                alert("An error occurred. Please try again.");
+            }
+        }
+    };
 
     return (
         <div style={styles.pageContainer}>
@@ -36,7 +62,7 @@ function DocumentDetailsPage() {
                     <div style={styles.buttonContainer}>
                         <button style={styles.button}>Download</button>
                         <button style={styles.button}>Edit</button>
-                        <button style={styles.button}>Delete</button>
+                        <button style={styles.button} onClick={deleteDocument}>Delete</button>
                     </div>
                 </div>
                 <div style={styles.preview}>
@@ -46,6 +72,7 @@ function DocumentDetailsPage() {
         </div>
     );
 }
+
 
 const styles = {
     pageContainer: {

@@ -2,9 +2,15 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../sidebar.css';
 
-function Button({ onClick, title, className }) {
+function Button({ onClick, title, isActive }) {
     return (
-        <button onClick={onClick} className={className}>
+        <button
+            onClick={onClick}
+            style={{
+                ...styles.button,
+                ...(isActive ? styles.activeButton : {}),
+            }}
+        >
             {title}
         </button>
     );
@@ -17,33 +23,51 @@ function Sidebar() {
     const handleNavigation = (page) => {
         navigate(page);
     };
-    
-    const isActive = (path) => {
-        if (path === '/documents') {
-            return location.pathname.startsWith('/documents');
-        }
-        return location.pathname === path;
-    };
 
     return (
-        <div className="sidebar">
+        <div style={styles.sidebar}>
             <Button
                 onClick={() => handleNavigation('/profile')}
-                className={`sidebar-button ${isActive('/profile') ? 'sidebar-button-active' : ''}`}
                 title="Profile"
+                isActive={location.pathname === '/profile'}
             />
             <Button
                 onClick={() => handleNavigation('/documents')}
-                className={`sidebar-button ${isActive('/documents') ? 'sidebar-button-active' : ''}`}
                 title="Documents"
+                isActive={location.pathname === '/documents' || location.pathname.includes('/documents/')}
             />
             <Button
                 onClick={() => handleNavigation('/upload')}
-                className={`sidebar-button ${isActive('/upload') ? 'sidebar-button-active' : ''}`}
-                title="Upload"
+                title="Upload Document"
+                isActive={location.pathname === '/upload'}
             />
         </div>
     );
 }
+
+const styles = {
+    sidebar: {
+        width: '10%',
+        height: '100vh',
+        padding: '20px',
+        backgroundColor: '#333',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    button: {
+        padding: '10px 20px',
+        margin: '10px 0',
+        backgroundColor: '#444',
+        color: 'white',
+        border: '1px solid #ccc',
+        textAlign: 'left',
+        cursor: 'pointer',
+    },
+    activeButton: {
+        backgroundColor: '#4CAF50',
+        color: 'white',
+        border: '1px solid #4CAF50',
+    },
+};
 
 export default Sidebar;

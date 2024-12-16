@@ -3,6 +3,8 @@ package paperless.models;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -22,7 +24,7 @@ public class Document {
   @Column
   @Schema(name = "id", description = "Unique identifier for the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
-  private String id; //Maybe int or long - not decided yet
+  private UUID id; //Maybe int or long - not decided yet
 
   @Column
   @Schema(name = "title", description = "Title of the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
@@ -60,16 +62,6 @@ public class Document {
   @Schema(name = "fileUrl", description = "URL to access the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("fileUrl")
   private String fileUrl;
-
-  @Column
-  @Schema(name = "tags", description = "Tags associated with the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("tags")
-  private List<String> tags = new ArrayList<>();
-
-  @Column
-  @Schema(name = "version", description = "Version of the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("version")
-  private String version;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // auto-generated methods (keep, maybe useful)
@@ -114,11 +106,11 @@ public class Document {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // manual getters/setters since lombok is joking around
 
-  public String getId() {
+  public UUID getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(UUID id) {
     this.id = id;
   }
 
@@ -176,22 +168,6 @@ public class Document {
 
   public void setFileUrl(String fileUrl) {
     this.fileUrl = fileUrl;
-  }
-
-  public List<String> getTags() {
-    return tags;
-  }
-
-  public void setTags(List<String> tags) {
-    this.tags = tags;
-  }
-
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
   }
 }
 
