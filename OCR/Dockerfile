@@ -21,17 +21,22 @@ FROM openjdk:17-jdk-slim
 
 # Install Ghostscript and Tesseract
 RUN apt-get update &&  \
-    apt-get install -y ghostscript tesseract-ocr && \
+    apt-get install -y ghostscript tesseract-ocr wget && \
     apt-get clean
 
 # Set the working directory in the container
 WORKDIR /app
 
+# Download Tesseract language data during build
+RUN mkdir -p /app/tessdata && \
+    wget -q -O /app/tessdata/eng.traineddata https://github.com/tesseract-ocr/tessdata_best/raw/main/eng.traineddata && \
+    wget -q -O /app/tessdata/deu.traineddata https://github.com/tesseract-ocr/tessdata_best/raw/main/deu.traineddata
+
+# Set TESSDATA_PREFIX environment variable
+ENV TESSDATA_PREFIX=/app/tessdata/
+
 # Copy the JAR file from the build stage
 COPY --from=build /app/target/*.jar /app/OCR.jar
-
-# Copy Tesseract language data to /app/tessdata_best
-COPY ./tessdata_best /app/tessdata_best
 
 # Expose the port that your Spring Boot app runs on
 EXPOSE 8082

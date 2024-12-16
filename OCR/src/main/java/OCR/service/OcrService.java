@@ -29,7 +29,7 @@ public class OcrService {
     private String performOCR(File file) {
         Tesseract tesseract = new Tesseract();
         try {
-            tesseract.setDatapath("/app/tessdata_best");
+            tesseract.setDatapath("/app/tessdata");
             return tesseract.doOCR(file);
         } catch (TesseractException e) {
             return null;
