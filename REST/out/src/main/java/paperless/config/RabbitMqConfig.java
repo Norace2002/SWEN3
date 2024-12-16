@@ -15,4 +15,9 @@ public class RabbitMqConfig {
     public Queue fileQueue() {
         return new Queue("fileQueue", true);
     }
+
+    @Bean(name = "returnQueue")
+    public Queue returnQueue() {
+        return new Queue("returnQueue", true);
+    }
 }

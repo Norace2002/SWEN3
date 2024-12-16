@@ -25,6 +25,7 @@ import paperless.models.DocumentsIdPreviewGet200Response;
 import paperless.rabbitmq.RabbitMqSender;
 import paperless.repositories.DocumentRepository;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -163,15 +164,17 @@ public class DocumentService {
         Document documentModel = stringToDocument(documentString);
 
         try{
-            // rabbitmq message / handle actual file
-            this.rabbitMqSender.send();
             byte[] byteArray = pdfFile.getBytes();
+
+            // save document data
+            documentRepository.save(documentModel);
 
             // minIO store File
             minIOStorage.upload(String.valueOf(documentModel.getId()), byteArray);
 
-            // save document data
-            documentRepository.save(documentModel);
+            // rabbitmq message
+            this.rabbitMqSender.sendIdentifier(documentModel.getId().toString());
+
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch(RuntimeException | IOException e){
             System.out.println(e);

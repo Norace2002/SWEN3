@@ -7,7 +7,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -18,21 +17,23 @@ public class RabbitMqSender {
 
     @Qualifier("messageQueue")
     @Autowired
-    private Queue queue;
+    private Queue messageQueue;
 
-    @Qualifier("fileQueue")
+    @Qualifier("returnQueue")
     @Autowired
-    private Queue queue2;
+    private Queue returnQueue;
 
+    /*
     public void send() {
         String message = "Hello World2!";
-        this.template.convertAndSend(queue.getName(), message);
-        System.out.println(" [x] Sent in queue1 '" + message + "'");
+        this.template.convertAndSend(messageQueue.getName(), message);
+        System.out.println(" [x] Sent in messageQueue: '" + message + "'");
     }
+    */
 
-    public void sendFile(MultipartFile file) throws IOException {
-        Message message = MessageBuilder.withBody(file.getBytes()).setHeader("ContentType", file.getContentType()).build();
-        this.template.convertAndSend(queue2.getName(), message);
-        System.out.println(" [x] Sent in queue2 '" + message + "'");
+    public void returnFileContent(String text) throws IOException{
+        Message message = MessageBuilder.withBody(text.getBytes()).build();
+        this.template.convertAndSend(returnQueue.getName(), message);
+        System.out.println(" [x] Sent in returnQueue: '" + message + "'");
     }
 }

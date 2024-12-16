@@ -19,11 +19,19 @@ RUN mvn clean package -DskipTests
 # Stage 2: Create a lightweight runtime container
 FROM openjdk:17-jdk-slim
 
+# Install Ghostscript and Tesseract
+RUN apt-get update &&  \
+    apt-get install -y ghostscript tesseract-ocr && \
+    apt-get clean
+
 # Set the working directory in the container
 WORKDIR /app
 
 # Copy the JAR file from the build stage
 COPY --from=build /app/target/*.jar /app/OCR.jar
+
+# Copy Tesseract language data to /app/tessdata_best
+COPY ./tessdata_best /app/tessdata_best
 
 # Expose the port that your Spring Boot app runs on
 EXPOSE 8082

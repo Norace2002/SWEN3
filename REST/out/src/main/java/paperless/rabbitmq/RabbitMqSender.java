@@ -18,21 +18,26 @@ public class RabbitMqSender {
 
     @Qualifier("messageQueue")
     @Autowired
-    private Queue queue;
+    private Queue messageQueue;
 
     @Qualifier("fileQueue")
     @Autowired
-    private Queue queue2;
+    private Queue fileQueue;
 
     public void send() {
         String message = "Hello World!";
-        this.template.convertAndSend(queue.getName(), message);
+        this.template.convertAndSend(messageQueue.getName(), message);
         System.out.println(" [x] Sent in queue1 '" + message + "'");
     }
 
     public void sendFile(MultipartFile file) throws IOException {
         Message message = MessageBuilder.withBody(file.getBytes()).setHeader("ContentType", file.getContentType()).build();
-        this.template.convertAndSend(queue2.getName(), message);
-        System.out.println(" [x] Sent in queue2 '" + message + "'");
+        this.template.convertAndSend(fileQueue.getName(), message);
+        System.out.println(" [x] Sent in fileQueue: '" + message + "'");
+    }
+
+    public void sendIdentifier(String id) throws IOException{
+        this.template.convertAndSend(messageQueue.getName(), id);
+        System.out.println(" [x] Sent in messageQueue: '" + id + "'");
     }
 }
