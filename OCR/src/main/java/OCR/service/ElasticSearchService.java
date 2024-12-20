@@ -33,18 +33,18 @@ public class ElasticSearchService {
         }
     }
 
-    public Result indexDocument(DocumentDTO document) throws IOException {
+    public Result indexDocument(String documentID, String documentText) throws IOException {
         // do indexing with ElasticSearch
         IndexResponse response = esClient.index(i -> i
                 .index(ElasticSearchConfig.DOCUMENTS_INDEX_NAME)
-                .id(document.getId().toString())
-                .document(document)
+                .id(documentID)
+                .document(documentText)
         );
-        String logMsg = "Indexed document " + document.getId() + ": result=" + response.result() + ", index=" + response.index();
+        String logMsg = "Indexed document " + documentID + ": result=" + response.result() + ", index=" + response.index();
         if ( response.result()!=Result.Created && response.result()!=Result.Updated )
-            log.error("Failed to " + logMsg);
+            System.out.println("Failed to index Document");
         else
-            log.info(logMsg);
+            System.out.println("Successfully indexed Document");
         return response.result();
     }
 }

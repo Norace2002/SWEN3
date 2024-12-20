@@ -26,7 +26,7 @@ public class OcrService {
     MinIOService minIOService;
 
     @Autowired
-    ElasticSearchService elasticSearchService;
+    OCR.services.ElasticSearchService elasticSearchService;
 
     private String performOCR(File file) {
         Tesseract tesseract = new Tesseract();

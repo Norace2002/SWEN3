@@ -31,8 +31,8 @@ public class ElasticSearchConfig
     @Bean
     public ElasticsearchTransport getElasticsearchTransport() {
         JacksonJsonpMapper mapper = new JacksonJsonpMapper();
-        mapper.objectMapper().registerModule(new JavaTimeModule());
-        mapper.objectMapper().registerModule(new JsonNullableModule());
+        //mapper.objectMapper().registerModule(new JavaTimeModule());
+        //mapper.objectMapper().registerModule(new JsonNullableModule());
         return new RestClientTransport(
                 getRestClient(), mapper);
     }
