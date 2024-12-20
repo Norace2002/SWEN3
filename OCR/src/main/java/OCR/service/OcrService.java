@@ -1,6 +1,7 @@
 package OCR.service;
 
 import OCR.rabbitmq.RabbitMqSender;
+
 import org.ghost4j.document.PDFDocument;
 import org.ghost4j.renderer.SimpleRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class OcrService {
 
     @Autowired
     MinIOService minIOService;
+
+    @Autowired
+    ElasticSearchService elasticSearchService;
 
     private String performOCR(File file) {
         Tesseract tesseract = new Tesseract();
