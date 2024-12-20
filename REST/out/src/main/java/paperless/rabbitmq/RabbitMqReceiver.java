@@ -1,19 +1,21 @@
 package paperless.rabbitmq;
 
 import lombok.AllArgsConstructor;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import paperless.models.Document;
+import paperless.repositories.DocumentRepository;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class RabbitMqReceiver {
+    @Autowired
+    DocumentRepository documentRepository;
+
     /*
     @RabbitListener(queues = "messageQueue")
     public void receive(String in) throws InterruptedException {
@@ -29,6 +31,20 @@ public class RabbitMqReceiver {
         // Process the received file bytes and contentType as needed
         // You can save the file, perform further processing, etc.
 
+        // message should contain id if successful
         System.out.println("Received file with content: " + message);
+
+        // if message not empty -> contains id -> update existing entry
+        if(!message.isEmpty()){
+            UUID id = UUID.fromString(message);
+            Optional<Document> optionalDocument = documentRepository.findById(id);
+
+            if(optionalDocument.isPresent()){
+                Document returnDocument = optionalDocument.get();
+                returnDocument.setOcrReadable(true);
+
+                documentRepository.save(returnDocument);
+            }
+        }
     }
 }

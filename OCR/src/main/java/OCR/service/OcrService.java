@@ -8,14 +8,12 @@ import org.springframework.stereotype.Service;
 
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.springframework.util.ResourceUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.List;
 
 @Service
@@ -99,7 +97,7 @@ public class OcrService {
 
             // return message that OCR was successful
             if(fileText != null){
-                rabbitMqSender.returnFileContent("OCR extraction was successful");
+                rabbitMqSender.returnFileContent(fileIdentifier);
             }
         }catch(Exception e){
             e.printStackTrace();
