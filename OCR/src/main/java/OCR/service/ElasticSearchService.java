@@ -1,4 +1,4 @@
-package OCR.services;
+package OCR.service;
 
 import OCR.config.ElasticSearchConfig;
 
@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -34,11 +36,17 @@ public class ElasticSearchService {
     }
 
     public Result indexDocument(String documentID, String documentText) throws IOException {
+
+        //elastic search can not index a text so we transform it.
+        Map<String, Object> documentMap = new HashMap<>();
+        documentMap.put("documentText", documentText);
+
+
         // do indexing with ElasticSearch
         IndexResponse response = esClient.index(i -> i
                 .index(ElasticSearchConfig.DOCUMENTS_INDEX_NAME)
                 .id(documentID)
-                .document(documentText)
+                .document(documentMap)
         );
         String logMsg = "Indexed document " + documentID + ": result=" + response.result() + ", index=" + response.index();
         if ( response.result()!=Result.Created && response.result()!=Result.Updated )

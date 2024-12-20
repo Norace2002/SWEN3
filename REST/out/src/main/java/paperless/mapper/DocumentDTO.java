@@ -11,6 +11,8 @@ public class DocumentDTO {
 
     private String fileUrl;
 
+    private String ocrReadable;
+
     public UUID getId(){
         return id;
     }
@@ -41,5 +43,13 @@ public class DocumentDTO {
 
     public void setFileUrl(String fileUrl){
         this.fileUrl = fileUrl;
+    }
+
+    public String getOcrReadable(){
+        return ocrReadable;
+    }
+
+    public void setOcrReadable(String ocrReadable){
+        this.ocrReadable = ocrReadable;
     }
 }

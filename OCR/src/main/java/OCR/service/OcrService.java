@@ -26,7 +26,7 @@ public class OcrService {
     MinIOService minIOService;
 
     @Autowired
-    OCR.services.ElasticSearchService elasticSearchService;
+    ElasticSearchService elasticSearchService;
 
     private String performOCR(File file) {
         Tesseract tesseract = new Tesseract();
@@ -84,8 +84,9 @@ public class OcrService {
             String fileText = performOCR(file);
             System.out.println("OCR performed on image " + fileIdentifier + " with Tesseract");
 
-            // TODO:
             // send text to elasticSearch
+            elasticSearchService.indexDocument(fileIdentifier, fileText);
+            System.out.println("Indexing Document performed on " + fileIdentifier + " with elastic Search");
 
             // TODO:
             // clean up after file
