@@ -35,6 +35,7 @@ public class DocumentsApiController{
     @Autowired
     private DocumentService documentService;
 
+
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
     }
@@ -68,6 +69,11 @@ public class DocumentsApiController{
     public ResponseEntity<Document> getDocumentMetadata(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
         return documentService.getDocumentMetadataResponse(uuid);
+    }
+
+    @GetMapping("/documents/search/{key}")
+    public ResponseEntity<List<DocumentDTO>> getDocumentSearch(@PathVariable String key){
+        return documentService.getDocumentSearchKeyword(key);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

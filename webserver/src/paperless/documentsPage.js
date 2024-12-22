@@ -9,7 +9,20 @@ function DocumentsPage() {
     // Save documents in documents array including setter
     const [documents, setDocuments] = useState([]);
 
+    function handleSearch(e) {
+        if (e.key === 'Enter') {
+            search();
+        }
+    }
+
+    async function search(){
+        const data = await loadResults();
+        setDocuments(data);
+    }
+
     useEffect(() => {
+
+
         async function fetchDocuments() {
             const data = await loadDocuments();
             setDocuments(data);
@@ -20,7 +33,7 @@ function DocumentsPage() {
         <div className="page-container">
             <div className="header">DOCUMENTS</div>
             <div className="search-container">
-                <input type="text" placeholder="Search" className="search-input" />
+                <input type="text" placeholder="Search" id="search" className="search-input" onKeyUp={handleSearch} />
             </div>
             <div className="grid-wrapper">
                 <div className="grid-container">
@@ -41,6 +54,33 @@ function DocumentsPage() {
             </div>
         </div>
     );
+}
+
+
+
+async function loadResults(){
+    // Loading Documents
+    try {
+        const response = await axios.get('http://127.0.0.1:8081/documents/search/' + document.getElementById("search").value);
+        console.log("SearchbarValue: " + document.getElementById("search").value)
+        console.log("Elastic Search id List:", response.data);
+        return response.data;
+
+    } catch(err) {
+        if (err.response) {
+            // The request was made and the server responded with a status code
+            console.error("Error status:", err.response.status);
+            console.error("Error data:", err.response.data);
+        } else if (err.request) {
+            // The request was made but no response was received
+            console.error("No response received:", err.request);
+        } else {
+            // Something happened in setting up the request that triggered an error
+            console.error("Error:", err.message);
+        }
+    }
+
+    return [];
 }
 
 async function loadDocuments() {

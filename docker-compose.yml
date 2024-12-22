@@ -13,7 +13,6 @@ services:
       - minio
       - rabbitmq
       - elasticsearch
-      - kibana
 
   webserver:
     build:
@@ -35,7 +34,6 @@ services:
       - minio
       - rabbitmq
       - elasticsearch
-      - kibana
 
   database:
     image: postgres:15

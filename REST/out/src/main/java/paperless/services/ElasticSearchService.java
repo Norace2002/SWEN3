@@ -15,10 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class ElasticSearchService {
@@ -39,7 +36,8 @@ public class ElasticSearchService {
         }
     }
 
-    public Optional<DocumentDTO> getDocumentById(int id) {
+    /*
+    public Optional<DocumentDTO> getDocumentById(String id) {
         try {
             GetResponse<DocumentDTO> response = esClient.get(g -> g
                             .index(ElasticSearchConfig.DOCUMENTS_INDEX_NAME)
@@ -51,36 +49,42 @@ public class ElasticSearchService {
             log.error("Failed to get document id=" + id + " from elasticsearch: " + e);
             return Optional.empty();
         }
-    }
+    }*/
 
-    public List<DocumentDTO> searchDocumentsByKeyword(String keyword) {
+    public List<String> searchDocumentsByKeyword(String keyword) {
+        List<String> documentIds = new ArrayList<>();
+
         try {
-            SearchResponse<DocumentDTO> response = esClient.search(s -> s
+            SearchResponse<Map<String, Object>> response = esClient.search(s -> s
                             .index(ElasticSearchConfig.DOCUMENTS_INDEX_NAME)
                             .query(q -> q
                                     .match(m -> m
-                                            .field("_all")
+                                            .field("documentText")
                                             .query(keyword)
                                     )
                             ),
-                    DocumentDTO.class
+                    (Class<Map<String, Object>>) (Class<?>) Map.class
             );
 
+            //iterate through results to extract ids
+            response.hits().hits().forEach(hit -> {
+                String documentId = hit.id();
+                documentIds.add(documentId);
+            });
 
-            return response.hits().hits().stream()
-                    .map(hit -> hit.source())
-                    .filter(Objects::nonNull)
-                    .toList();
+            return documentIds;
+
         } catch (IOException e) {
-            log.error("Failed to search for keyword='" + keyword + "' in Elasticsearch: " + e);
+            log.error("Failed to search for keyword='" + keyword + "' in Elasticsearch: ", e);
             return Collections.emptyList();
         }
     }
 
-    public boolean deleteDocumentById(int id) {
+
+    public boolean deleteDocumentById(String id) {
         DeleteResponse result = null;
         try {
-            result = esClient.delete(d -> d.index(ElasticSearchConfig.DOCUMENTS_INDEX_NAME).id(String.valueOf(id)));
+            result = esClient.delete(d -> d.index(ElasticSearchConfig.DOCUMENTS_INDEX_NAME).id(id));
         } catch (IOException e) {
             log.warn("Failed to delete document id=" + id + " from elasticsearch: " + e);
         }
