@@ -27,11 +27,12 @@ function UploadPage() {
         const fileSize = file.size;
         const title = file.name.split('.')[0];
         const uid = crypto.randomUUID();
+        const ocr = false;
 
         const uploadDocument = '{"id": "' + uid + '", "title": "' + title + '", "author": "' +
                                 author + '", "description": "' + description + '", "uploadDate": "' +
                                 currentDate + '", "fileType": "' + fileType + '", "fileSize": ' +
-                                fileSize + ', "fileUrl": "' + fileUrl + '"}'
+                                fileSize + ', "fileUrl": "' + fileUrl + '", "ocrReadable": "' + ocr +'"}'
 
         console.log(uploadDocument);
 

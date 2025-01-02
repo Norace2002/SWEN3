@@ -12,6 +12,7 @@ services:
       - database
       - minio
       - rabbitmq
+      - elasticsearch
 
   webserver:
     build:
@@ -32,6 +33,7 @@ services:
     depends_on:
       - minio
       - rabbitmq
+      - elasticsearch
 
   database:
     image: postgres:15
@@ -68,7 +70,34 @@ services:
     volumes:
       - minio-storage:/data
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "logger.level=ERROR"
+    ports:
+      - "9200:9200" # Elasticsearch API
+    volumes:
+      - elastic-storage:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.7.1
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200 # http no s for elasticsearch
+      - SERVER_SSL_ENABLED=false
+      - ELASTICSEARCH_SSL_VERIFICATIONMODE=none # Disable certificate validation for development
+    ports:
+      - "9092:5601" # Kibana UI exposed on port 9092
+    depends_on:
+      - elasticsearch
+
 
 volumes:
   db:
   minio-storage: {}
+  elastic-storage:

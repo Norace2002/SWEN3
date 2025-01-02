@@ -25,7 +25,6 @@ import paperless.models.DocumentsIdPreviewGet200Response;
 import paperless.rabbitmq.RabbitMqSender;
 import paperless.repositories.DocumentRepository;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +47,9 @@ public class DocumentService {
 
     @Autowired
     private MinIOService minIOStorage;
+
+    @Autowired
+    private ElasticSearchService elasticSearchService;
 
     // @Getter
     // for whatever reason the getter from lombok here fails (02.11.24) -> manually created below
@@ -156,6 +158,34 @@ public class DocumentService {
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity<List<DocumentDTO>> getDocumentSearchKeyword(String key){
+        List<String> documentIDs = elasticSearchService.searchDocumentsByKeyword(key);
+
+        System.out.println("Ids: " + documentIDs);
+
+        if(!documentIDs.isEmpty()){
+            List<Optional<Document>> optionalDocuments = new ArrayList<>();
+            List<Document> documents = new ArrayList<>();
+            List<DocumentDTO> documentsDTO = new ArrayList<>();
+
+            for(String id : documentIDs){
+                optionalDocuments.add(documentRepository.findById(UUID.fromString(id)));
+            }
+
+            for(Optional<Document> opDoc : optionalDocuments){
+                documents.add(opDoc.get());
+            }
+
+            for(Document document : documents){
+                documentsDTO.add(documentMapper.documentToDocumentDTO(document));
+            }
+
+            return new ResponseEntity<>(documentsDTO, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     //ToDo:

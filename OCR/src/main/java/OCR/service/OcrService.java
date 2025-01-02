@@ -1,6 +1,7 @@
 package OCR.service;
 
 import OCR.rabbitmq.RabbitMqSender;
+
 import org.ghost4j.document.PDFDocument;
 import org.ghost4j.renderer.SimpleRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,14 +9,12 @@ import org.springframework.stereotype.Service;
 
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.springframework.util.ResourceUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.List;
 
 @Service
@@ -25,6 +24,9 @@ public class OcrService {
 
     @Autowired
     MinIOService minIOService;
+
+    @Autowired
+    ElasticSearchService elasticSearchService;
 
     private String performOCR(File file) {
         Tesseract tesseract = new Tesseract();
@@ -82,8 +84,9 @@ public class OcrService {
             String fileText = performOCR(file);
             System.out.println("OCR performed on image " + fileIdentifier + " with Tesseract");
 
-            // TODO:
             // send text to elasticSearch
+            elasticSearchService.indexDocument(fileIdentifier, fileText);
+            System.out.println("Indexing Document performed on " + fileIdentifier + " with elastic Search");
 
             // TODO:
             // clean up after file
@@ -99,7 +102,7 @@ public class OcrService {
 
             // return message that OCR was successful
             if(fileText != null){
-                rabbitMqSender.returnFileContent("OCR extraction was successful");
+                rabbitMqSender.returnFileContent(fileIdentifier);
             }
         }catch(Exception e){
             e.printStackTrace();
