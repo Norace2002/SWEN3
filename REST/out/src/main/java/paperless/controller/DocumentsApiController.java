@@ -54,7 +54,7 @@ public class DocumentsApiController{
     }
 
     @GetMapping("/documents/{id}/download")
-    public ResponseEntity<Resource> getDocumentDownload(@PathVariable String id){
+    public ResponseEntity<byte[]> getDocumentDownload(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
         return documentService.downloadDocumentResponse(uuid);
     }

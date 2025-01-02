@@ -111,19 +111,14 @@ public class DocumentService {
 
     //ToDo:
     // * find out if this actually works
-    // * work with filepath/classpath/?
-    public ResponseEntity<Resource> downloadDocumentResponse(UUID id){
+    public ResponseEntity<byte[]> downloadDocumentResponse(UUID id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
-
-
-        String filecontent = new String(minIOStorage.download(String.valueOf(id)));
 
         if(optionalDocument.isPresent()) {
             Document foundDocument = optionalDocument.get();
-            Resource downloadResorce;
+            byte[] filecontent = minIOStorage.download(String.valueOf(id));
             try {
-                downloadResorce = resourceLoader.getResource("filesystem:" + foundDocument.getFileUrl());
-                return new ResponseEntity<>(downloadResorce, HttpStatus.OK);
+                return new ResponseEntity<>(filecontent, HttpStatus.OK);
             } catch (RuntimeException e) {
                 System.out.println(e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
