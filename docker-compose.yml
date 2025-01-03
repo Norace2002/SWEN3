@@ -8,11 +8,21 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - webserver
-      - database
-      - minio
-      - rabbitmq
-      - elasticsearch
+      webserver:
+        condition: service_started
+      database:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      kibana:
+        condition: service_started
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
 
   webserver:
     build:
@@ -31,9 +41,18 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      - minio
-      - rabbitmq
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      kibana:
+        condition: service_started
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+
 
   database:
     image: postgres:15
@@ -83,6 +102,11 @@ services:
       - "9200:9200" # Elasticsearch API
     volumes:
       - elastic-storage:/usr/share/elasticsearch/data
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9200 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.7.1

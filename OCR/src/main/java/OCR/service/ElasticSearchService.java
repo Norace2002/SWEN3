@@ -40,7 +40,7 @@ public class ElasticSearchService {
         //elastic search can not index a text so we transform it.
         Map<String, Object> documentMap = new HashMap<>();
         documentMap.put("documentText", documentText);
-
+        System.out.println("Text aus dem Dokument: " + documentText);
 
         // do indexing with ElasticSearch
         IndexResponse response = esClient.index(i -> i
