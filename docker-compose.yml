@@ -23,6 +23,7 @@ services:
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
+      - LOGGING_LEVEL_org.springframework.amqp=ERROR
 
   webserver:
     build:
@@ -33,6 +34,8 @@ services:
     volumes:
       - ./webserver/src:/app/src
       - ./webserver/public:/app/public
+    environment:
+      LOG_LEVEL: error
 
   ocr-service:
     build:
@@ -52,6 +55,7 @@ services:
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
+      - LOGGING_LEVEL_org.springframework.amqp=ERROR
 
 
   database:
@@ -62,6 +66,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: paperless
       PGDATA: /data/postgres
+      LOG_LEVEL: error
     ports:
       - "5432:5432"
     volumes:
@@ -97,7 +102,7 @@ services:
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "logger.level=ERROR"
+      - logger.level=ERROR
     ports:
       - "9200:9200" # Elasticsearch API
     volumes:
@@ -115,6 +120,7 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200 # http no s for elasticsearch
       - SERVER_SSL_ENABLED=false
       - ELASTICSEARCH_SSL_VERIFICATIONMODE=none # Disable certificate validation for development
+      - LOGGING_ROOT_LEVEL=error
     ports:
       - "9092:5601" # Kibana UI exposed on port 9092
     depends_on:
