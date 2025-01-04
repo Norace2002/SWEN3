@@ -1,9 +1,11 @@
 import React, { useRef, useState } from "react";
 import "../Upload.css";
+import {useNavigate} from "react-router-dom";
 
 function UploadPage() {
 
     const [selectedFile, setSelectedFile] = useState(null);
+    const navigate = useNavigate();
 
     //gets called after uploading file
     const handleFileChange = (event) => {
@@ -47,12 +49,15 @@ function UploadPage() {
             });
 
             if (response.ok) {
-                console.log('Upload successfully uploaded');
+                console.log('Document successfully uploaded');
+                navigate('/documents');
             } else {
                 console.error('Error during upload: ', response.status, response.statusText);
+                alert("Troubles with the server: " + response.status);
             }
         } catch (error) {
             console.error('Error during upload:', error);
+            alert("Error during upload: " + error);
         }
     };
 

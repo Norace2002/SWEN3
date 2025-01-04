@@ -17,24 +17,40 @@ function DocumentsPage() {
 
     async function search(){
         const data = await loadResults();
+
+        if(data.length === 0){
+            document.getElementById( 'emptySearchInfoBox').style.display = 'block';
+        }
+
         setDocuments(data);
     }
 
+    async function fetchDocuments() {
+        const data = await loadDocuments();
+        setDocuments(data);
+    }
+
+    async function cancelSearch(){
+        document.getElementById( 'emptySearchInfoBox').style.display = 'none';
+        document.getElementById('search').value = "";
+        fetchDocuments();
+    }
+
     useEffect(() => {
-
-
-        async function fetchDocuments() {
-            const data = await loadDocuments();
-            setDocuments(data);
-        }
         fetchDocuments();
     }, []);
+
     return (
         <div className="page-container">
             <div className="header">DOCUMENTS</div>
             <div className="search-container">
                 <input type="text" placeholder="Search" id="search" className="search-input" onKeyUp={handleSearch} />
+                <button onClick={cancelSearch}>Cancel</button>
             </div>
+            <div className="content-container" id="emptySearchInfoBox" style={{ display: 'none' }}>
+                <p> No document matches your search! </p>
+            </div>
+
             <div className="grid-wrapper">
                 <div className="grid-container">
                     {documents.map((document) => (
