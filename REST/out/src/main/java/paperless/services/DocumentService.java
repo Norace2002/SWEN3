@@ -109,8 +109,6 @@ public class DocumentService {
         }
     }
 
-    //ToDo:
-    // * find out if this actually works
     public ResponseEntity<byte[]> downloadDocumentResponse(UUID id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
@@ -128,17 +126,11 @@ public class DocumentService {
         }
     }
 
-    //ToDo:
-    // * implement some way of sending an image of the first page as a preview
     public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreviewResponse(UUID id){
-        // how to manage preview?
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
         if(optionalDocument.isPresent()){
-            Document returnDocument = optionalDocument.get();
-            DocumentsIdPreviewGet200Response previewObject = new DocumentsIdPreviewGet200Response();
-            previewObject.setPreviewUrl(returnDocument.getFileUrl());
-            return new ResponseEntity<>(previewObject, HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
