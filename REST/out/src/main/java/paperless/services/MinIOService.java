@@ -71,4 +71,16 @@ public class MinIOService {
             throw new RuntimeException(e);
         }
     }
+
+    public void delete(String objectName){
+        try{
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(
+                    minIOConfig.getBucketName())
+                    .object(objectName)
+                    .build()
+            );
+        }catch(MinioException | IOException | NoSuchAlgorithmException | InvalidKeyException e){
+            throw new RuntimeException(e);
+        }
+    }
 }

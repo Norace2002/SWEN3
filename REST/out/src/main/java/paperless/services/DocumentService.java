@@ -214,7 +214,10 @@ public class DocumentService {
 
     public ResponseEntity<Void> deleteExistingDocumentResponse(UUID id){
         try{
+            //delete from DB, minIO and elasticSearch
             documentRepository.deleteById(id);
+            minIOStorage.delete(id.toString());
+            elasticSearchService.deleteDocumentById(id.toString());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch(RuntimeException e){
             System.out.println(e);

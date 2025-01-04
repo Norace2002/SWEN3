@@ -1,14 +1,10 @@
 package paperless.services;
 
 import paperless.config.ElasticSearchConfig;
-import paperless.mapper.DocumentDTO;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch.core.DeleteResponse;
-import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.IndexResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
@@ -81,7 +77,7 @@ public class ElasticSearchService {
     }
 
 
-    public boolean deleteDocumentById(String id) {
+    public void deleteDocumentById(String id) {
         DeleteResponse result = null;
         try {
             result = esClient.delete(d -> d.index(ElasticSearchConfig.DOCUMENTS_INDEX_NAME).id(id));
@@ -89,10 +85,9 @@ public class ElasticSearchService {
             log.warn("Failed to delete document id=" + id + " from elasticsearch: " + e);
         }
         if ( result==null )
-            return false;
+            return;
         if (result.result() != Result.Deleted )
             log.warn(result.toString());
-        return result.result()==Result.Deleted;
     }
 
 }
