@@ -9,7 +9,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import paperless.mapper.DocumentDTO;
 import paperless.models.Document;
-import paperless.models.DocumentsIdPreviewGet200Response;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +58,7 @@ public class DocumentsApiController{
     }
 
     @GetMapping("/documents/{id}/preview")
-    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreview(@PathVariable String id){
+    public ResponseEntity<Document> getDocumentPreview(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
         return documentService.getDocumentPreviewResponse(uuid);
     }

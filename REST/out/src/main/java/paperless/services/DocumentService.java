@@ -19,7 +19,6 @@ import paperless.mapper.DocumentDTO;
 import paperless.mapper.DocumentMapper;
 
 import paperless.models.Document;
-import paperless.models.DocumentsIdPreviewGet200Response;
 
 import paperless.rabbitmq.RabbitMqSender;
 import paperless.repositories.DocumentRepository;
@@ -124,11 +123,12 @@ public class DocumentService {
         }
     }
 
-    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreviewResponse(UUID id){
+    public ResponseEntity<Document> getDocumentPreviewResponse(UUID id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
         if(optionalDocument.isPresent()){
-            return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+            Document doc = optionalDocument.get();
+            return new ResponseEntity<>(doc, HttpStatus.NOT_IMPLEMENTED);
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
