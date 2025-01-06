@@ -23,7 +23,6 @@ services:
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
-      - LOGGING_LEVEL_org.springframework.amqp=ERROR
 
   webserver:
     build:
@@ -34,8 +33,6 @@ services:
     volumes:
       - ./webserver/src:/app/src
       - ./webserver/public:/app/public
-    environment:
-      LOG_LEVEL: error
 
   ocr-service:
     build:
@@ -55,7 +52,6 @@ services:
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
-      - LOGGING_LEVEL_org.springframework.amqp=ERROR
 
 
   database:
@@ -66,12 +62,12 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: paperless
       PGDATA: /data/postgres
-      LOG_LEVEL: error
     ports:
       - "5432:5432"
     volumes:
       - db:/data/postgres
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: ["postgres", "-c", "log_min_messages=error"]
 
   rabbitmq:
     image: rabbitmq:management
