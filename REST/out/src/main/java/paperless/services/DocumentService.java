@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import org.springframework.http.HttpStatus;
@@ -69,7 +68,7 @@ public class DocumentService {
 
     public Document stringToDocument(String input){
         try{
-            return this.getObjectMapper().readValue(input, new TypeReference<Document>(){});
+            return this.getObjectMapper().readValue(input, new TypeReference<>(){});
         }
         catch(JsonProcessingException e){
             throw new RuntimeException(e);
@@ -113,10 +112,9 @@ public class DocumentService {
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
         if(optionalDocument.isPresent()) {
-            Document foundDocument = optionalDocument.get();
-            byte[] filecontent = minIOStorage.download(String.valueOf(id));
+            byte[] fileContent = minIOStorage.download(String.valueOf(id));
             try {
-                return new ResponseEntity<>(filecontent, HttpStatus.OK);
+                return new ResponseEntity<>(fileContent, HttpStatus.OK);
             } catch (RuntimeException e) {
                 System.out.println(e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

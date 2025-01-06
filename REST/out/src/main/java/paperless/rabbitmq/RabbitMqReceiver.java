@@ -16,15 +16,6 @@ public class RabbitMqReceiver {
     @Autowired
     DocumentRepository documentRepository;
 
-    /*
-    @RabbitListener(queues = "messageQueue")
-    public void receive(String in) throws InterruptedException {
-        System.out.println(" [x] Received  in queue 1'" + in + "q1'");
-        Thread.sleep(3000);
-        System.out.println("Done queue 1");
-    }
-    */
-
     @RabbitListener(queues = "returnQueue")
     public void receiveFileContent(String message) {
 

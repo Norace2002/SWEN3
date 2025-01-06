@@ -32,21 +32,6 @@ public class ElasticSearchService {
         }
     }
 
-    /*
-    public Optional<DocumentDTO> getDocumentById(String id) {
-        try {
-            GetResponse<DocumentDTO> response = esClient.get(g -> g
-                            .index(ElasticSearchConfig.DOCUMENTS_INDEX_NAME)
-                            .id(String.valueOf(id)),
-                    DocumentDTO.class
-            );
-            return (response.found() && response.source()!=null) ? Optional.of(response.source()) : Optional.empty();
-        } catch (IOException e) {
-            log.error("Failed to get document id=" + id + " from elasticsearch: " + e);
-            return Optional.empty();
-        }
-    }*/
-
     public List<String> searchDocumentsByKeyword(String keyword) {
         List<String> documentIds = new ArrayList<>();
 

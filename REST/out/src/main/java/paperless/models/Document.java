@@ -1,7 +1,5 @@
 package paperless.models;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -12,9 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import lombok.Getter;
-import lombok.Setter;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
