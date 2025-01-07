@@ -23,6 +23,6 @@ public class RabbitMqSender {
 
     public void sendIdentifier(String id) throws IOException{
         this.template.convertAndSend(messageQueue.getName(), id);
-        logger.debug(" [x] Sent in messageQueue: '" + id + "'");
+        logger.info(" [x] Sent in messageQueue: '" + id + "'");
     }
 }

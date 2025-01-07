@@ -28,7 +28,7 @@ public class RabbitMqReceiver {
         // You can save the file, perform further processing, etc.
 
         // message should contain id if successful
-        logger.debug("Received file with content: " + message);
+        logger.info("Received file with content: " + message);
 
         // if message not empty -> contains id -> update existing entry
         if(!message.isEmpty()){
@@ -40,7 +40,7 @@ public class RabbitMqReceiver {
                 returnDocument.setOcrReadable(true);
 
                 documentRepository.save(returnDocument);
-                logger.debug("Set database entry with uuid " + id + " to OCR readable - true");
+                logger.info("Set database entry with uuid " + id + " to OCR readable - true");
             }
         }
     }

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,6 +51,8 @@ public class DocumentService {
     @Autowired
     private ElasticSearchService elasticSearchService;
 
+    private final Logger logger = LogManager.getLogger();
+
     // @Getter
     // for whatever reason the getter from lombok here fails (02.11.24) -> manually created below
     private final ObjectMapper objectMapper;
@@ -92,6 +96,7 @@ public class DocumentService {
         for(Document doc : documents){
             documentDTOs.add(documentMapper.documentToDocumentDTO(doc));
         }
+
         return new ResponseEntity<>(documentDTOs, HttpStatus.OK);
     }
 
@@ -115,10 +120,11 @@ public class DocumentService {
             try {
                 return new ResponseEntity<>(fileContent, HttpStatus.OK);
             } catch (RuntimeException e) {
-                System.out.println(e);
+                logger.error("Data for Document " + id + " could not be retrieved. See stacktrace: " + e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else{
+            logger.error("Couldn't find document with id: " + id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -148,7 +154,7 @@ public class DocumentService {
     public ResponseEntity<List<DocumentDTO>> getDocumentSearchKeyword(String key){
         List<String> documentIDs = elasticSearchService.searchDocumentsByKeyword(key);
 
-        System.out.println("Ids: " + documentIDs);
+        logger.info("Ids: " + documentIDs);
 
         if(!documentIDs.isEmpty()){
             List<Optional<Document>> optionalDocuments = new ArrayList<>();
@@ -181,18 +187,18 @@ public class DocumentService {
         try{
             byte[] byteArray = pdfFile.getBytes();
 
-            // save document data
             documentRepository.save(documentModel);
+            logger.info("Document saved in DB");
 
-            // minIO store File
             minIOStorage.upload(String.valueOf(documentModel.getId()), byteArray);
+            logger.info("Document data stored in MinIO");
 
-            // rabbitmq message
             this.rabbitMqSender.sendIdentifier(documentModel.getId().toString());
+            logger.info("Document ID sent to rabbitMQ");
 
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch(RuntimeException | IOException e){
-            System.out.println(e);
+            logger.error("Document creation failed. See stacktrace: " + e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -205,20 +211,25 @@ public class DocumentService {
             documentRepository.save(document);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch(RuntimeException e){
-            System.out.println(e);
+            logger.error("Document editing failed. See stacktrace: " + e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public ResponseEntity<Void> deleteExistingDocumentResponse(UUID id){
         try{
-            //delete from DB, minIO and elasticSearch
             documentRepository.deleteById(id);
+            logger.info("Document deleted from DB");
+
             minIOStorage.delete(id.toString());
+            logger.info("Document deleted from MinIO");
+
             elasticSearchService.deleteDocumentById(id.toString());
+            logger.info("Document deleted from ElasticSearch");
+
             return new ResponseEntity<>(HttpStatus.OK);
         } catch(RuntimeException e){
-            System.out.println(e);
+            logger.error("Document deletion failed. See stacktrace: " + e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -41,7 +41,7 @@ public class ElasticSearchService {
         //elastic search can not index a text so we transform it.
         Map<String, Object> documentMap = new HashMap<>();
         documentMap.put("documentText", documentText);
-        logger.debug("Text from document: " + documentText);
+        logger.info("Text from document: " + documentText);
 
         // do indexing with ElasticSearch
         IndexResponse response = esClient.index(i -> i
@@ -53,7 +53,7 @@ public class ElasticSearchService {
             // shouldn't crash the system, just not able to fulltext-search
             logger.error("ElasticSearch-Service failed to index document with id " + documentID);
         else {
-            logger.debug("Successfully indexed document with id " + documentID);
+            logger.info("Successfully indexed document with id " + documentID);
         }
     }
 }

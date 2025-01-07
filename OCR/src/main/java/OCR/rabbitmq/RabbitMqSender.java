@@ -24,6 +24,6 @@ public class RabbitMqSender {
     public void returnFileContent(String text) {
         Message message = MessageBuilder.withBody(text.getBytes()).build();
         this.template.convertAndSend(returnQueue.getName(), message);
-        logger.debug("FileContent sent in returnQueue: '" + message + "'");
+        logger.info("FileContent sent in returnQueue: '" + message + "'");
     }
 }
