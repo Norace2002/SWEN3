@@ -4,6 +4,8 @@ package OCR.service;
 import io.minio.*;
 import io.minio.errors.*;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import OCR.config.MinIOConfig;
@@ -16,6 +18,8 @@ import java.security.NoSuchAlgorithmException;
 public class MinIOService {
     private final MinIOConfig minIOConfig;
     private final MinioClient minioClient;
+
+    Logger logger = LogManager.getLogger();
 
     @Autowired
     MinIOService(MinIOConfig minIOConfig, MinioClient minioClient) {
@@ -33,6 +37,7 @@ public class MinIOService {
         } catch (ServerException | InvalidResponseException | InsufficientDataException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | ErrorResponseException | XmlParserException |
                  InternalException e) {
+            logger.error("MinIO-Service failed. See detailed stacktrace: " + e);
             throw new RuntimeException(e);
         }
     }

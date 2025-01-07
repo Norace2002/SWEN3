@@ -1,5 +1,7 @@
 package OCR.rabbitmq;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.Queue;
@@ -17,9 +19,11 @@ public class RabbitMqSender {
     @Autowired
     private Queue returnQueue;
 
+    Logger logger = LogManager.getLogger();
+
     public void returnFileContent(String text) {
         Message message = MessageBuilder.withBody(text.getBytes()).build();
         this.template.convertAndSend(returnQueue.getName(), message);
-        System.out.println(" [x] Sent in returnQueue: '" + message + "'");
+        logger.debug("FileContent sent in returnQueue: '" + message + "'");
     }
 }

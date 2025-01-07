@@ -6,6 +6,8 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,8 @@ import java.util.Map;
 @Slf4j
 public class ElasticSearchService {
     private final ElasticsearchClient esClient;
+
+    Logger logger = LogManager.getLogger();
 
     @Autowired
     public ElasticSearchService(ElasticsearchClient esClient) throws IOException {
@@ -37,7 +41,7 @@ public class ElasticSearchService {
         //elastic search can not index a text so we transform it.
         Map<String, Object> documentMap = new HashMap<>();
         documentMap.put("documentText", documentText);
-        System.out.println("Text aus dem Dokument: " + documentText);
+        logger.debug("Text from document: " + documentText);
 
         // do indexing with ElasticSearch
         IndexResponse response = esClient.index(i -> i
@@ -46,8 +50,10 @@ public class ElasticSearchService {
                 .document(documentMap)
         );
         if ( response.result()!=Result.Created && response.result()!=Result.Updated )
-            System.out.println("Failed to index Document");
-        else
-            System.out.println("Successfully indexed Document");
+            // shouldn't crash the system, just not able to fulltext-search
+            logger.error("ElasticSearch-Service failed to index document with id " + documentID);
+        else {
+            logger.debug("Successfully indexed document with id " + documentID);
+        }
     }
 }
