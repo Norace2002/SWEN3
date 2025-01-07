@@ -1,5 +1,7 @@
 package paperless.rabbitmq;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,10 @@ public class RabbitMqSender {
     @Autowired
     private Queue messageQueue;
 
+    private final Logger logger = LogManager.getLogger();
+
     public void sendIdentifier(String id) throws IOException{
         this.template.convertAndSend(messageQueue.getName(), id);
-        System.out.println(" [x] Sent in messageQueue: '" + id + "'");
+        logger.debug(" [x] Sent in messageQueue: '" + id + "'");
     }
 }

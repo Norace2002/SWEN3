@@ -1,5 +1,7 @@
 package paperless.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,39 +40,48 @@ public class DocumentsApiController{
         return Optional.ofNullable(request);
     }
 
+    private final Logger logger = LogManager.getLogger();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @GetMapping("/documents")
     public ResponseEntity<List<DocumentDTO>> getDocumentDtos(){
+        logger.debug("Received request GET - /documents");
         return documentService.getAllDocumentsResponse();
     }
+
 
     @GetMapping("/documents/{id}")
     public ResponseEntity<DocumentDTO> getDocumentDtoById(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.debug("Received request GET - /documents/" + uuid);
         return documentService.getDocumentByIdResponse(uuid);
     }
 
     @GetMapping("/documents/{id}/download")
     public ResponseEntity<byte[]> getDocumentDownload(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.debug("Received request GET - /documents/" + uuid + "/download");
         return documentService.downloadDocumentResponse(uuid);
     }
 
     @GetMapping("/documents/{id}/preview")
     public ResponseEntity<Document> getDocumentPreview(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.debug("Received request GET - /documents/" + uuid + "/preview");
         return documentService.getDocumentPreviewResponse(uuid);
     }
 
     @GetMapping("/documents/{id}/metadata")
     public ResponseEntity<Document> getDocumentMetadata(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.debug("Received request GET - /documents/" + uuid + "/metadata");
         return documentService.getDocumentMetadataResponse(uuid);
     }
 
     @GetMapping("/documents/search/{key}")
     public ResponseEntity<List<DocumentDTO>> getDocumentSearch(@PathVariable String key){
+        logger.debug("Received request GET - /documents/search" );
         return documentService.getDocumentSearchKeyword(key);
     }
 
@@ -81,6 +92,7 @@ public class DocumentsApiController{
             @RequestPart("document") String document,
             @RequestPart("file") MultipartFile pdfFile
     ){
+        logger.debug("Received request POST - /documents");
         return documentService.createNewDocumentResponse(document, pdfFile);
     }
 
@@ -89,6 +101,7 @@ public class DocumentsApiController{
     @PutMapping("/documents/{id}")
     public ResponseEntity<Void> editDocumentById(@PathVariable String id, @RequestBody Document document) {
         UUID uuid = UUID.fromString(id);
+        logger.debug("Received request PUT - /documents/" + uuid);
         return documentService.editExistingDocumentResponse(uuid, document);
     }
 
@@ -97,6 +110,7 @@ public class DocumentsApiController{
     @DeleteMapping("/documents/{id}")
     public ResponseEntity<Void> deleteDocumentById(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.debug("Received request DELETE - /documents/" + uuid);
         return documentService.deleteExistingDocumentResponse(uuid);
     }
 
