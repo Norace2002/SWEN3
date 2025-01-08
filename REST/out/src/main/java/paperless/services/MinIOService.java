@@ -1,6 +1,8 @@
 package paperless.services;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import paperless.config.MinIOConfig;
 import io.minio.*;
 import io.minio.errors.*;
@@ -17,6 +19,8 @@ import java.security.NoSuchAlgorithmException;
 public class MinIOService {
     private final MinIOConfig minIOConfig;
     private final MinioClient minioClient;
+
+    private final Logger logger = LogManager.getLogger();
 
     @Autowired
     MinIOService(MinIOConfig minIOConfig, MinioClient minioClient) {
@@ -51,9 +55,10 @@ public class MinIOService {
             );
 
         } catch (MinioException e) {
-            System.out.println("Error occurred: " + e);
-            System.out.println("HTTP trace: " + e.httpTrace());
+            logger.error("Error occurred: " + e);
+            logger.error("HTTP trace: " + e.httpTrace());
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+            logger.error("MinIO-Service-REST failed to upload. See detailed stacktrace: " + e);
             throw new RuntimeException(e);
         }
     }
@@ -68,6 +73,20 @@ public class MinIOService {
         } catch (ServerException | InvalidResponseException | InsufficientDataException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | ErrorResponseException | XmlParserException |
                  InternalException e) {
+            logger.error("MinIO-Service-REST failed to download. See detailed stacktrace: " + e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void delete(String objectName){
+        try{
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(
+                    minIOConfig.getBucketName())
+                    .object(objectName)
+                    .build()
+            );
+        }catch(MinioException | IOException | NoSuchAlgorithmException | InvalidKeyException e){
+            logger.error("MinIO-Service-REST failed to delete. See detailed stacktrace: " + e);
             throw new RuntimeException(e);
         }
     }

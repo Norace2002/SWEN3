@@ -67,6 +67,7 @@ services:
     volumes:
       - db:/data/postgres
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: ["postgres", "-c", "log_min_messages=error"]
 
   rabbitmq:
     image: rabbitmq:management
@@ -97,7 +98,7 @@ services:
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "logger.level=ERROR"
+      - logger.level=ERROR
     ports:
       - "9200:9200" # Elasticsearch API
     volumes:
@@ -115,6 +116,7 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200 # http no s for elasticsearch
       - SERVER_SSL_ENABLED=false
       - ELASTICSEARCH_SSL_VERIFICATIONMODE=none # Disable certificate validation for development
+      - LOGGING_ROOT_LEVEL=error
     ports:
       - "9092:5601" # Kibana UI exposed on port 9092
     depends_on:

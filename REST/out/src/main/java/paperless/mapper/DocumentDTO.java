@@ -8,9 +8,6 @@ public class DocumentDTO {
     private UUID id;
     private String title;
     private String description;
-
-    private String fileUrl;
-
     private String ocrReadable;
 
     public UUID getId(){
@@ -35,14 +32,6 @@ public class DocumentDTO {
 
     public void setDescription(String description){
         this.description = description;
-    }
-
-    public String getFileUrl(){
-        return fileUrl;
-    }
-
-    public void setFileUrl(String fileUrl){
-        this.fileUrl = fileUrl;
     }
 
     public String getOcrReadable(){

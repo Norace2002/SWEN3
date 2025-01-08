@@ -2,6 +2,8 @@ package OCR.service;
 
 import OCR.rabbitmq.RabbitMqSender;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ghost4j.document.PDFDocument;
 import org.ghost4j.renderer.SimpleRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,10 @@ public class OcrService {
     @Autowired
     ElasticSearchService elasticSearchService;
 
+    Logger logger = LogManager.getLogger();
+  
     private String performOCR(List<File> files) throws Exception{
+
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath("/app/tessdata");
         tesseract.setTessVariable("user_defined_dpi", "70");
@@ -52,16 +57,16 @@ public class OcrService {
         // Load the PDF document
         PDFDocument document = new PDFDocument();
         document.load(new ByteArrayInputStream(pdfBytes));
-        System.out.println("ghost4j pdfdocument created from bytes");
+        logger.info("ghost4j PDF document created from bytes");
 
         // Create a renderer and set the resolution
         SimpleRenderer renderer = new SimpleRenderer();
         renderer.setResolution(70); // Set desired DPI
-        System.out.println("ghost4j renderer created and resolution set");
-
+        logger.info("ghost4j renderer created and resolution set");
+      
         // Render the document as a list of images
         List<Image> images = renderer.render(document);
-        System.out.println("ghost4j list of images rendered");
+        logger.info("ghost4j list of images rendered");
 
         List<File> outputImages = new ArrayList<>();
 
@@ -76,20 +81,21 @@ public class OcrService {
             outputImages.add(outputImage);
         }
 
-        System.out.println("written the renderedimages to outputimages");
+        logger.info("rendered images to output image file");
 
         return outputImages;
     }
 
-    public void returnFileContent(String fileIdentifier) throws Exception {
+    public void returnFileContent(String fileIdentifier){
         try{
             // download file bytes from minio
             byte[] byteStream = minIOService.download(fileIdentifier);
 
             if(byteStream != null){
-                System.out.println("ByteStream for id " + fileIdentifier + " retrieved from MinIO");
+                logger.info("ByteStream for id " + fileIdentifier + " retrieved from MinIO");
             } else{
-                throw new Exception("Bytestream received is empty");
+                logger.error("received bytestream for identifier " + fileIdentifier + " is empty");
+                throw new Exception();
             }
 
             // render image from bytestream
@@ -98,11 +104,11 @@ public class OcrService {
 
             // perform OCR
             String fileText = performOCR(files);
-            System.out.println("OCR performed on image " + fileIdentifier + " with Tesseract");
+            logger.info("OCR performed on image " + fileIdentifier + " with Tesseract");
 
             // send text to elasticSearch
             elasticSearchService.indexDocument(fileIdentifier, fileText);
-            System.out.println("Indexing Document performed on " + fileIdentifier + " with elastic Search");
+            logger.info("Indexing Document performed on " + fileIdentifier + " with elastic Search");
 
             // clean up after file
             if(!files.isEmpty()){
@@ -113,9 +119,9 @@ public class OcrService {
                 }
 
                 if(deleted){
-                    System.out.println("file cleanup successful");
+                    logger.info("file cleanup successful");
                 } else{
-                    System.out.println("failed to delete file");
+                    logger.info("failed to delete file");
                 }
             }
 
@@ -124,7 +130,7 @@ public class OcrService {
                 rabbitMqSender.returnFileContent(fileIdentifier);
             }
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("OCR-Service failed. See detailed stacktrace: " + e);
         }
     }
 

@@ -1,6 +1,9 @@
 package paperless.rabbitmq;
 
+
+import org.apache.logging.log4j.LogManager;
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,14 +19,7 @@ public class RabbitMqReceiver {
     @Autowired
     DocumentRepository documentRepository;
 
-    /*
-    @RabbitListener(queues = "messageQueue")
-    public void receive(String in) throws InterruptedException {
-        System.out.println(" [x] Received  in queue 1'" + in + "q1'");
-        Thread.sleep(3000);
-        System.out.println("Done queue 1");
-    }
-    */
+    private final Logger logger = LogManager.getLogger();
 
     @RabbitListener(queues = "returnQueue")
     public void receiveFileContent(String message) {
@@ -32,7 +28,7 @@ public class RabbitMqReceiver {
         // You can save the file, perform further processing, etc.
 
         // message should contain id if successful
-        System.out.println("Received file with content: " + message);
+        logger.info("Received file with content: " + message);
 
         // if message not empty -> contains id -> update existing entry
         if(!message.isEmpty()){
@@ -44,6 +40,7 @@ public class RabbitMqReceiver {
                 returnDocument.setOcrReadable(true);
 
                 documentRepository.save(returnDocument);
+                logger.info("Set database entry with uuid " + id + " to OCR readable - true");
             }
         }
     }

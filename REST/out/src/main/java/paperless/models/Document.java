@@ -1,7 +1,5 @@
 package paperless.models;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -12,9 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import lombok.Getter;
-import lombok.Setter;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -59,12 +54,6 @@ public class Document {
 
   @Column
   @NotNull
-  @Schema(name = "fileUrl", description = "URL to access the document", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("fileUrl")
-  private String fileUrl;
-
-  @Column
-  @NotNull
   @Schema(name = "ocrReadable", description = "States if document content is available in elasticsearch", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("ocrReadable")
   private Boolean ocrReadable;
@@ -84,13 +73,12 @@ public class Document {
     return Objects.equals(this.id, document.id) &&
         Objects.equals(this.title, document.title) &&
         Objects.equals(this.description, document.description) &&
-        Objects.equals(this.fileUrl, document.fileUrl) &&
         Objects.equals(this.ocrReadable, document.ocrReadable);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title, description, fileUrl, ocrReadable);
+    return Objects.hash(id, title, description, ocrReadable);
   }
 
   @Override
@@ -99,7 +87,6 @@ public class Document {
             "    id: " + toIndentedString(id) + "\n" +
             "    title: " + toIndentedString(title) + "\n" +
             "    description: " + toIndentedString(description) + "\n" +
-            "    fileUrl: " + toIndentedString(fileUrl) + "\n" +
             "    ocrReadable: " + toIndentedString(ocrReadable) + "\n" +
             "}";
   }
@@ -168,14 +155,6 @@ public class Document {
 
   public void setFileSize(int fileSize) {
     this.fileSize = fileSize;
-  }
-
-  public String getFileUrl() {
-    return fileUrl;
-  }
-
-  public void setFileUrl(String fileUrl) {
-    this.fileUrl = fileUrl;
   }
 
   public Boolean getOcrReadable() {

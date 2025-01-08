@@ -6,6 +6,5 @@ CREATE TABLE IF NOT EXISTS document (
     upload_date TIMESTAMP NOT NULL,
     file_type VARCHAR(255) NOT NULL,
     file_size INTEGER NOT NULL,
-    file_url VARCHAR(255) NOT NULL,
     ocr_readable BOOLEAN NOT NULL DEFAULT FALSE
 );
