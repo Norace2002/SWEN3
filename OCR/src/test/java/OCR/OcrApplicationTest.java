@@ -39,7 +39,6 @@ class OcrServiceTest {
 
     @Test
     void testReturnFileContent() throws Exception {
-        // Arrange
         String fileIdentifier = "testFileId";
         byte[] mockPdfBytes = "mock pdf content".getBytes();
         String mockOcrResult = "Test OCR Text";
@@ -50,21 +49,17 @@ class OcrServiceTest {
         doReturn(Arrays.asList(File.createTempFile("test", ".png"))).when(spyOcrService).convertPdfToImage(mockPdfBytes);
         doReturn(mockOcrResult).when(spyOcrService).performOCR(anyList());
 
-        // Act
         spyOcrService.returnFileContent(fileIdentifier);
 
-        // Assert
         verify(elasticSearchService).indexDocument(fileIdentifier, mockOcrResult);
         verify(rabbitMqSender).returnFileContent(fileIdentifier);
     }
 
     @Test
     void testReturnFileContentWithException() {
-        // Arrange
         String fileIdentifier = "testFileId";
         when(minIOService.download(fileIdentifier)).thenThrow(new RuntimeException("Mock Exception"));
 
-        // Act & Assert
         assertDoesNotThrow(() -> ocrService.returnFileContent(fileIdentifier));
         verifyNoInteractions(elasticSearchService);
         verifyNoInteractions(rabbitMqSender);
@@ -72,20 +67,16 @@ class OcrServiceTest {
 
     @Test
     void testPerformOCRWithEmptyFiles() throws Exception {
-        // Arrange
         List<File> emptyFiles = Arrays.asList();
 
-        // Act
         String result = ocrService.performOCR(emptyFiles);
 
-        // Assert
         assertNotNull(result);
         assertEquals("", result);
     }
 
     @Test
     void testPerformOCRWithSingleFile() throws Exception {
-        // Arrange
         File mockFile = File.createTempFile("testImage", ".png");
         Files.write(mockFile.toPath(), "Mock image data".getBytes());
         String expectedOcrResult = "Mock OCR Result";
@@ -96,20 +87,16 @@ class OcrServiceTest {
         OcrService spyOcrService = spy(ocrService);
         doReturn(expectedOcrResult).when(spyOcrService).performOCR(Arrays.asList(mockFile));
 
-        // Act
         String result = spyOcrService.performOCR(Arrays.asList(mockFile));
 
-        // Assert
         assertNotNull(result);
         assertEquals(expectedOcrResult + "", result);
 
-        // Clean up
         mockFile.delete();
     }
 
     @Test
     void testReturnFileContentHandlesValidInput() throws Exception {
-        // Arrange
         String fileIdentifier = "validFileId";
         byte[] mockPdfBytes = "Valid PDF content".getBytes();
         String mockOcrResult = "Extracted OCR Text";
@@ -120,15 +107,9 @@ class OcrServiceTest {
         doReturn(Arrays.asList(File.createTempFile("testImage", ".png"))).when(spyOcrService).convertPdfToImage(mockPdfBytes);
         doReturn(mockOcrResult).when(spyOcrService).performOCR(anyList());
 
-        // Act
         spyOcrService.returnFileContent(fileIdentifier);
 
-        // Assert
         verify(elasticSearchService).indexDocument(fileIdentifier, mockOcrResult);
         verify(rabbitMqSender).returnFileContent(fileIdentifier);
     }
-
-
-
-
 }
