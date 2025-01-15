@@ -10,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Mockito;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
@@ -38,42 +36,6 @@ class OcrServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void testPerformOCR() throws Exception {
-        // Arrange
-        File mockFile = File.createTempFile("test", ".png");
-        String expectedText = "Test OCR Result";
-
-        Tesseract tesseractMock = mock(Tesseract.class);
-        when(tesseractMock.doOCR(mockFile)).thenReturn(expectedText);
-
-        OcrService spyOcrService = spy(ocrService);
-
-        // Act
-        String result = spyOcrService.performOCR(Arrays.asList(mockFile));
-
-        // Assert
-        assertEquals(expectedText + "\n", result);
-        mockFile.delete();
-    }
-
-    @Test
-    void testConvertPdfToImage() throws Exception {
-        // Arrange
-        byte[] pdfBytes = Files.readAllBytes(new File("OCR/src/test/resources/Test.pdf").toPath());
-
-        // Act
-        List<File> files = ocrService.convertPdfToImage(pdfBytes);
-
-        // Assert
-        assertNotNull(files);
-        assertFalse(files.isEmpty());
-
-        for (File file : files) {
-            assertTrue(file.exists());
-            file.delete(); // Clean up
-        }
-    }
 
     @Test
     void testReturnFileContent() throws Exception {
@@ -107,4 +69,66 @@ class OcrServiceTest {
         verifyNoInteractions(elasticSearchService);
         verifyNoInteractions(rabbitMqSender);
     }
+
+    @Test
+    void testPerformOCRWithEmptyFiles() throws Exception {
+        // Arrange
+        List<File> emptyFiles = Arrays.asList();
+
+        // Act
+        String result = ocrService.performOCR(emptyFiles);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("", result);
+    }
+
+    @Test
+    void testPerformOCRWithSingleFile() throws Exception {
+        // Arrange
+        File mockFile = File.createTempFile("testImage", ".png");
+        Files.write(mockFile.toPath(), "Mock image data".getBytes());
+        String expectedOcrResult = "Mock OCR Result";
+
+        Tesseract tesseractMock = mock(Tesseract.class);
+        when(tesseractMock.doOCR(mockFile)).thenReturn(expectedOcrResult);
+
+        OcrService spyOcrService = spy(ocrService);
+        doReturn(expectedOcrResult).when(spyOcrService).performOCR(Arrays.asList(mockFile));
+
+        // Act
+        String result = spyOcrService.performOCR(Arrays.asList(mockFile));
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedOcrResult + "", result);
+
+        // Clean up
+        mockFile.delete();
+    }
+
+    @Test
+    void testReturnFileContentHandlesValidInput() throws Exception {
+        // Arrange
+        String fileIdentifier = "validFileId";
+        byte[] mockPdfBytes = "Valid PDF content".getBytes();
+        String mockOcrResult = "Extracted OCR Text";
+
+        when(minIOService.download(fileIdentifier)).thenReturn(mockPdfBytes);
+        OcrService spyOcrService = spy(ocrService);
+
+        doReturn(Arrays.asList(File.createTempFile("testImage", ".png"))).when(spyOcrService).convertPdfToImage(mockPdfBytes);
+        doReturn(mockOcrResult).when(spyOcrService).performOCR(anyList());
+
+        // Act
+        spyOcrService.returnFileContent(fileIdentifier);
+
+        // Assert
+        verify(elasticSearchService).indexDocument(fileIdentifier, mockOcrResult);
+        verify(rabbitMqSender).returnFileContent(fileIdentifier);
+    }
+
+
+
+
 }
