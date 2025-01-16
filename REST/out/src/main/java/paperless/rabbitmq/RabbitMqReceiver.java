@@ -1,27 +1,25 @@
 package paperless.rabbitmq;
 
-import lombok.AllArgsConstructor;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import org.apache.logging.log4j.LogManager;
+import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.Logger;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import paperless.models.Document;
+import paperless.repositories.DocumentRepository;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class RabbitMqReceiver {
-    /*
-    @RabbitListener(queues = "messageQueue")
-    public void receive(String in) throws InterruptedException {
-        System.out.println(" [x] Received  in queue 1'" + in + "q1'");
-        Thread.sleep(3000);
-        System.out.println("Done queue 1");
-    }
-    */
+    @Autowired
+    DocumentRepository documentRepository;
+
+    private final Logger logger = LogManager.getLogger();
 
     @RabbitListener(queues = "returnQueue")
     public void receiveFileContent(String message) {
@@ -29,6 +27,21 @@ public class RabbitMqReceiver {
         // Process the received file bytes and contentType as needed
         // You can save the file, perform further processing, etc.
 
-        System.out.println("Received file with content: " + message);
+        // message should contain id if successful
+        logger.info("Received file with content: " + message);
+
+        // if message not empty -> contains id -> update existing entry
+        if(!message.isEmpty()){
+            UUID id = UUID.fromString(message);
+            Optional<Document> optionalDocument = documentRepository.findById(id);
+
+            if(optionalDocument.isPresent()){
+                Document returnDocument = optionalDocument.get();
+                returnDocument.setOcrReadable(true);
+
+                documentRepository.save(returnDocument);
+                logger.info("Set database entry with uuid " + id + " to OCR readable - true");
+            }
+        }
     }
 }

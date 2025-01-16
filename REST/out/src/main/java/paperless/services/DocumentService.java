@@ -5,10 +5,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import org.springframework.http.HttpStatus;
@@ -20,12 +21,10 @@ import paperless.mapper.DocumentDTO;
 import paperless.mapper.DocumentMapper;
 
 import paperless.models.Document;
-import paperless.models.DocumentsIdPreviewGet200Response;
 
 import paperless.rabbitmq.RabbitMqSender;
 import paperless.repositories.DocumentRepository;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +48,11 @@ public class DocumentService {
     @Autowired
     private MinIOService minIOStorage;
 
+    @Autowired
+    private ElasticSearchService elasticSearchService;
+
+    private final Logger logger = LogManager.getLogger();
+
     // @Getter
     // for whatever reason the getter from lombok here fails (02.11.24) -> manually created below
     private final ObjectMapper objectMapper;
@@ -67,7 +71,7 @@ public class DocumentService {
 
     public Document stringToDocument(String input){
         try{
-            return this.getObjectMapper().readValue(input, new TypeReference<Document>(){});
+            return this.getObjectMapper().readValue(input, new TypeReference<>(){});
         }
         catch(JsonProcessingException e){
             throw new RuntimeException(e);
@@ -92,6 +96,7 @@ public class DocumentService {
         for(Document doc : documents){
             documentDTOs.add(documentMapper.documentToDocumentDTO(doc));
         }
+
         return new ResponseEntity<>(documentDTOs, HttpStatus.OK);
     }
 
@@ -107,41 +112,29 @@ public class DocumentService {
         }
     }
 
-    //ToDo:
-    // * find out if this actually works
-    // * work with filepath/classpath/?
-    public ResponseEntity<Resource> downloadDocumentResponse(UUID id){
+    public ResponseEntity<byte[]> downloadDocumentResponse(UUID id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
-
-        String filecontent = new String(minIOStorage.download(String.valueOf(id)));
-
         if(optionalDocument.isPresent()) {
-            Document foundDocument = optionalDocument.get();
-            Resource downloadResorce;
+            byte[] fileContent = minIOStorage.download(String.valueOf(id));
             try {
-                downloadResorce = resourceLoader.getResource("filesystem:" + foundDocument.getFileUrl());
-                return new ResponseEntity<>(downloadResorce, HttpStatus.OK);
+                return new ResponseEntity<>(fileContent, HttpStatus.OK);
             } catch (RuntimeException e) {
-                System.out.println(e);
+                logger.error("Data for Document " + id + " could not be retrieved. See stacktrace: " + e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else{
+            logger.error("Couldn't find document with id: " + id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    //ToDo:
-    // * implement some way of sending an image of the first page as a preview
-    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreviewResponse(UUID id){
-        // how to manage preview?
+    public ResponseEntity<Document> getDocumentPreviewResponse(UUID id){
         Optional<Document> optionalDocument = documentRepository.findById(id);
 
         if(optionalDocument.isPresent()){
-            Document returnDocument = optionalDocument.get();
-            DocumentsIdPreviewGet200Response previewObject = new DocumentsIdPreviewGet200Response();
-            previewObject.setPreviewUrl(returnDocument.getFileUrl());
-            return new ResponseEntity<>(previewObject, HttpStatus.OK);
+            Document doc = optionalDocument.get();
+            return new ResponseEntity<>(doc, HttpStatus.NOT_IMPLEMENTED);
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -158,6 +151,34 @@ public class DocumentService {
         }
     }
 
+    public ResponseEntity<List<DocumentDTO>> getDocumentSearchKeyword(String key){
+        List<String> documentIDs = elasticSearchService.searchDocumentsByKeyword(key);
+
+        logger.info("Ids: " + documentIDs);
+
+        if(!documentIDs.isEmpty()){
+            List<Optional<Document>> optionalDocuments = new ArrayList<>();
+            List<Document> documents = new ArrayList<>();
+            List<DocumentDTO> documentsDTO = new ArrayList<>();
+
+            for(String id : documentIDs){
+                optionalDocuments.add(documentRepository.findById(UUID.fromString(id)));
+            }
+
+            for(Optional<Document> opDoc : optionalDocuments){
+                documents.add(opDoc.get());
+            }
+
+            for(Document document : documents){
+                documentsDTO.add(documentMapper.documentToDocumentDTO(document));
+            }
+
+            return new ResponseEntity<>(documentsDTO, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     //ToDo:
     // * find out how a file is sent from frontend and how it will be stored
     public ResponseEntity<Void> createNewDocumentResponse(String documentString, MultipartFile pdfFile){
@@ -166,18 +187,18 @@ public class DocumentService {
         try{
             byte[] byteArray = pdfFile.getBytes();
 
-            // save document data
             documentRepository.save(documentModel);
+            logger.info("Document saved in DB");
 
-            // minIO store File
             minIOStorage.upload(String.valueOf(documentModel.getId()), byteArray);
+            logger.info("Document data stored in MinIO");
 
-            // rabbitmq message
             this.rabbitMqSender.sendIdentifier(documentModel.getId().toString());
+            logger.info("Document ID sent to rabbitMQ");
 
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch(RuntimeException | IOException e){
-            System.out.println(e);
+            logger.error("Document creation failed. See stacktrace: " + e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -190,7 +211,7 @@ public class DocumentService {
             documentRepository.save(document);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch(RuntimeException e){
-            System.out.println(e);
+            logger.error("Document editing failed. See stacktrace: " + e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -198,9 +219,17 @@ public class DocumentService {
     public ResponseEntity<Void> deleteExistingDocumentResponse(UUID id){
         try{
             documentRepository.deleteById(id);
+            logger.info("Document deleted from DB");
+
+            minIOStorage.delete(id.toString());
+            logger.info("Document deleted from MinIO");
+
+            elasticSearchService.deleteDocumentById(id.toString());
+            logger.info("Document deleted from ElasticSearch");
+
             return new ResponseEntity<>(HttpStatus.OK);
         } catch(RuntimeException e){
-            System.out.println(e);
+            logger.error("Document deletion failed. See stacktrace: " + e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

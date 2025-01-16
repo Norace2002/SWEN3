@@ -1,9 +1,11 @@
 import React, { useRef, useState } from "react";
 import "../Upload.css";
+import {useNavigate} from "react-router-dom";
 
 function UploadPage() {
 
     const [selectedFile, setSelectedFile] = useState(null);
+    const navigate = useNavigate();
 
     //gets called after uploading file
     const handleFileChange = (event) => {
@@ -17,7 +19,6 @@ function UploadPage() {
         const file = selectedFile;
         const author = document.getElementById("input_author").value;
         const description = document.getElementById("input_description").value;
-        const fileUrl = document.getElementById("input_path").value;
 
         //----------------------------------
 
@@ -27,11 +28,12 @@ function UploadPage() {
         const fileSize = file.size;
         const title = file.name.split('.')[0];
         const uid = crypto.randomUUID();
+        const ocr = false;
 
         const uploadDocument = '{"id": "' + uid + '", "title": "' + title + '", "author": "' +
                                 author + '", "description": "' + description + '", "uploadDate": "' +
-                                currentDate + '", "fileType": "' + fileType + '", "fileSize": ' +
-                                fileSize + ', "fileUrl": "' + fileUrl + '"}'
+                                currentDate + '", "fileType": "' + fileType + '", "fileSize": "' +
+                                fileSize + '", "ocrReadable": "' + ocr +'"}'
 
         console.log(uploadDocument);
 
@@ -46,12 +48,15 @@ function UploadPage() {
             });
 
             if (response.ok) {
-                console.log('Upload successfully uploaded');
+                console.log('Document successfully uploaded');
+                navigate('/documents');
             } else {
                 console.error('Error during upload: ', response.status, response.statusText);
+                alert("Troubles with the server: " + response.status);
             }
         } catch (error) {
             console.error('Error during upload:', error);
+            alert("Error during upload: " + error);
         }
     };
 
@@ -73,10 +78,6 @@ function UploadPage() {
                 <div className="form-row">
                     <label className="label">Description:</label>
                     <textarea id="input_description"></textarea>
-                </div>
-                <div className="form-row">
-                    <label className="label">Path:</label>
-                    <input id="input_path" className="input-field" type="text" />
                 </div>
                 <button className="upload-button" onClick={uploadFile}>Upload</button>
             </div>

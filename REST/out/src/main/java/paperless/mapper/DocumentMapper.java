@@ -13,12 +13,14 @@ public interface DocumentMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "title", target = "title")
     @Mapping(source = "description", target = "description")
-    @Mapping(source = "fileUrl", target = "fileUrl")
+    @Mapping(source = "ocrReadable", target = "ocrReadable")
+
+
     DocumentDTO documentToDocumentDTO(Document document);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "title", target = "title")
     @Mapping(source = "description", target = "description")
-    @Mapping(source = "fileUrl", target = "fileUrl")
+    @Mapping(source = "ocrReadable", target = "ocrReadable")
     Document documentDTOToDocument(DocumentDTO documentDTO);
 }

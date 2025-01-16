@@ -46,22 +46,53 @@ function DocumentDetailsPage() {
         }
     };
 
+    const downloadDocument = async () => {
+        if (!id) return;
+
+        try {
+            const response = await axios.get(`http://127.0.0.1:8081/documents/${id}/download`, {
+                // specify datatype to be byte array
+                responseType: 'arraybuffer',
+            });
+
+            // convert data to Blob (wtf is blob???, does it work???)
+            const file = new Blob([response.data], {
+                type: 'application/pdf',
+            });
+
+            // create url and open in browser
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL);
+
+        } catch (error) {
+            if (error.response) {
+                console.error("Error status:", error.response.status);
+                console.error("Error data:", error.response.data);
+                alert("Error downloading the document. Please try again.");
+            } else if (error.request) {
+                console.error("No response received:", error.request);
+                alert("Server not responding. Please check your connection.");
+            } else {
+                console.error("Error:", error.message);
+                alert("An error occurred. Please try again.");
+            }
+        }
+    };
+
     return (
         <div style={styles.pageContainer}>
-            <div style={styles.header}>Document XYZ</div>
+            <div style={styles.header}>Document {documentData.id}</div>
             <div style={styles.contentContainer}>
                 <div style={styles.details}>
-                    <p style={styles.detailItem}><strong>Document Title:</strong> {documentData.title}</p>
-                    <p style={styles.detailItem}><strong>Upload date:</strong> {documentData.uploadDate} </p>
-                    <p style={styles.detailItem}><strong>Last edited:</strong> {documentData.uploadDate} </p>
-                    <p style={styles.detailItem}><strong>Filetype:</strong> {documentData.fileType} </p>
+                    <p style={styles.detailItem}><strong>Title:</strong> {documentData.title}</p>
+                    <p style={styles.detailItem}><strong>Uploaded:</strong> {documentData.uploadDate} </p>
+                    <p style={styles.detailItem}><strong>Type:</strong> {documentData.fileType} </p>
                     <p style={styles.detailItem}><strong>Size:</strong> {documentData.fileSize} </p>
                     <p style={styles.detailItem}><strong>Description:</strong> {documentData.description }</p>
 
                     {/* buttons */}
                     <div style={styles.buttonContainer}>
-                        <button style={styles.button}>Download</button>
-                        <button style={styles.button}>Edit</button>
+                        <button style={styles.button} onClick={downloadDocument}>Download</button>
                         <button style={styles.button} onClick={deleteDocument}>Delete</button>
                     </div>
                 </div>

@@ -1,7 +1,8 @@
 package paperless.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import paperless.mapper.DocumentDTO;
 import paperless.models.Document;
-import paperless.models.DocumentsIdPreviewGet200Response;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,39 +35,54 @@ public class DocumentsApiController{
     @Autowired
     private DocumentService documentService;
 
+
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
     }
+
+    private final Logger logger = LogManager.getLogger();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @GetMapping("/documents")
     public ResponseEntity<List<DocumentDTO>> getDocumentDtos(){
+        logger.info("Received request GET - /documents");
         return documentService.getAllDocumentsResponse();
     }
+
 
     @GetMapping("/documents/{id}")
     public ResponseEntity<DocumentDTO> getDocumentDtoById(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.info("Received request GET - /documents/" + uuid);
         return documentService.getDocumentByIdResponse(uuid);
     }
 
     @GetMapping("/documents/{id}/download")
-    public ResponseEntity<Resource> getDocumentDownload(@PathVariable String id){
+    public ResponseEntity<byte[]> getDocumentDownload(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.info("Received request GET - /documents/" + uuid + "/download");
         return documentService.downloadDocumentResponse(uuid);
     }
 
     @GetMapping("/documents/{id}/preview")
-    public ResponseEntity<DocumentsIdPreviewGet200Response> getDocumentPreview(@PathVariable String id){
+    public ResponseEntity<Document> getDocumentPreview(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.info("Received request GET - /documents/" + uuid + "/preview");
         return documentService.getDocumentPreviewResponse(uuid);
     }
 
     @GetMapping("/documents/{id}/metadata")
     public ResponseEntity<Document> getDocumentMetadata(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.info("Received request GET - /documents/" + uuid + "/metadata");
         return documentService.getDocumentMetadataResponse(uuid);
+    }
+
+    @GetMapping("/documents/search/{key}")
+    public ResponseEntity<List<DocumentDTO>> getDocumentSearch(@PathVariable String key){
+        logger.info("Received request GET - /documents/search" );
+        return documentService.getDocumentSearchKeyword(key);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +92,7 @@ public class DocumentsApiController{
             @RequestPart("document") String document,
             @RequestPart("file") MultipartFile pdfFile
     ){
+        logger.info("Received request POST - /documents");
         return documentService.createNewDocumentResponse(document, pdfFile);
     }
 
@@ -85,6 +101,7 @@ public class DocumentsApiController{
     @PutMapping("/documents/{id}")
     public ResponseEntity<Void> editDocumentById(@PathVariable String id, @RequestBody Document document) {
         UUID uuid = UUID.fromString(id);
+        logger.info("Received request PUT - /documents/" + uuid);
         return documentService.editExistingDocumentResponse(uuid, document);
     }
 
@@ -93,6 +110,7 @@ public class DocumentsApiController{
     @DeleteMapping("/documents/{id}")
     public ResponseEntity<Void> deleteDocumentById(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
+        logger.info("Received request DELETE - /documents/" + uuid);
         return documentService.deleteExistingDocumentResponse(uuid);
     }
 
