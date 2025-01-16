@@ -32,8 +32,8 @@ public class OcrService {
     ElasticSearchService elasticSearchService;
 
     Logger logger = LogManager.getLogger();
-  
-    private String performOCR(List<File> files) throws Exception{
+
+    public String performOCR(List<File> files) throws Exception{
 
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath("/app/tessdata");

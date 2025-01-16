@@ -14,7 +14,7 @@ RUN mvn dependency:go-offline -B
 COPY ./src ./src
 
 # Build the application (skipping tests for faster builds)
-RUN mvn clean package -DskipTests
+RUN mvn clean package
 
 # Stage 2: Create a lightweight runtime container
 FROM openjdk:17-jdk-slim
